@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 // Importa os tipos de dados usados na aplicação (Page, Job, Employer, Application, NewsArticle)
 import { Page, Job, Employer, Application, NewsArticle } from './types';
 // Importa os dados mocados (simulados) para o funcionamento inicial da aplicação
@@ -36,9 +36,31 @@ const App: React.FC = () => {
   // --- ESTADOS GLOBAIS DA APLICAÇÃO ---
   // useState gerencia o estado interno dos componentes. Quando um estado muda, o componente re-renderiza.
   const [page, setPage] = useState<Page>('home'); // Estado para controlar a página atual
-  const [jobs, setJobs] = useState<Job[]>(MOCK_JOBS); // Estado para a lista de vagas
-  const [employers, setEmployers] = useState<Employer[]>(MOCK_EMPLOYERS); // Estado para a lista de empregadores
-  const [loggedInEmployer, setLoggedInEmployer] = useState<Employer | null>(null); // Estado para o empregador logado
+
+  // Carrega vagas do localStorage ou usa MOCK_JOBS se não houver
+  const [jobs, setJobs] = useState<Job[]>(() => {
+    const savedJobs = localStorage.getItem('jobs');
+    return savedJobs ? JSON.parse(savedJobs) : MOCK_JOBS;
+  });
+
+  // Carrega empregadores do localStorage ou usa MOCK_EMPLOYERS se não houver
+  const [employers, setEmployers] = useState<Employer[]>(() => {
+    const savedEmployers = localStorage.getItem('employers');
+    return savedEmployers ? JSON.parse(savedEmployers) : MOCK_EMPLOYERS;
+  });
+  
+  // O empregador logado não persiste após a atualização (por simplicidade nesta etapa)
+  const [loggedInEmployer, setLoggedInEmployer] = useState<Employer | null>(null);
+
+  // Efeito para salvar vagas no localStorage sempre que 'jobs' for atualizado
+  useEffect(() => {
+    localStorage.setItem('jobs', JSON.stringify(jobs));
+  }, [jobs]);
+
+  // Efeito para salvar empregadores no localStorage sempre que 'employers' for atualizado
+  useEffect(() => {
+    localStorage.setItem('employers', JSON.stringify(employers));
+  }, [employers]);
 
   // --- FUNÇÕES DE LÓGICA DE NEGÓCIO ---
   // useCallback é usado para memoizar (guardar) a definição da função,
