@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 // Importa os tipos de dados usados na aplicação (Page, Job, Employer, Application, NewsArticle)
 import { Page, Job, Employer, Application, NewsArticle } from './types';
 // Importa os dados mocados (simulados) para o funcionamento inicial da aplicação
@@ -36,9 +36,32 @@ const App: React.FC = () => {
   // --- ESTADOS GLOBAIS DA APLICAÇÃO ---
   // useState gerencia o estado interno dos componentes. Quando um estado muda, o componente re-renderiza.
   const [page, setPage] = useState<Page>('home'); // Estado para controlar a página atual
-  const [jobs, setJobs] = useState<Job[]>(MOCK_JOBS); // Estado para a lista de vagas
-  const [employers, setEmployers] = useState<Employer[]>(MOCK_EMPLOYERS); // Estado para a lista de empregadores
-  const [loggedInEmployer, setLoggedInEmployer] = useState<Employer | null>(null); // Estado para o empregador logado
+  const [jobs, setJobs] = useState<Job[]>(() => {
+    try {
+      const raw = localStorage.getItem('jobs');
+      return raw ? JSON.parse(raw) as Job[] : MOCK_JOBS;
+    } catch (e) {
+      return MOCK_JOBS;
+    }
+  }); // Estado para a lista de vagas (carregado do localStorage quando disponível)
+
+  const [employers, setEmployers] = useState<Employer[]>(() => {
+    try {
+      const raw = localStorage.getItem('employers');
+      return raw ? JSON.parse(raw) as Employer[] : MOCK_EMPLOYERS;
+    } catch (e) {
+      return MOCK_EMPLOYERS;
+    }
+  }); // Estado para a lista de empregadores (carregado do localStorage quando disponível)
+
+  const [loggedInEmployer, setLoggedInEmployer] = useState<Employer | null>(() => {
+    try {
+      const raw = localStorage.getItem('loggedInEmployer');
+      return raw ? JSON.parse(raw) as Employer : null;
+    } catch (e) {
+      return null;
+    }
+  }); // Estado para o empregador logado (carregado do localStorage quando disponível)
 
   // --- FUNÇÕES DE LÓGICA DE NEGÓCIO ---
   // useCallback é usado para memoizar (guardar) a definição da função,
@@ -127,6 +150,35 @@ const App: React.FC = () => {
             : job
     ));
   }, []);
+
+  // Sincroniza mudanças importantes com o localStorage para persistência entre reloads
+  useEffect(() => {
+    try {
+      localStorage.setItem('jobs', JSON.stringify(jobs));
+    } catch (e) {
+      // falha em gravar no localStorage não bloqueia a aplicação
+    }
+  }, [jobs]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('employers', JSON.stringify(employers));
+    } catch (e) {
+      // falha silenciosa
+    }
+  }, [employers]);
+
+  useEffect(() => {
+    try {
+      if (loggedInEmployer) {
+        localStorage.setItem('loggedInEmployer', JSON.stringify(loggedInEmployer));
+      } else {
+        localStorage.removeItem('loggedInEmployer');
+      }
+    } catch (e) {
+      // falha silenciosa
+    }
+  }, [loggedInEmployer]);
 
   // Função para renderizar a página correta com base no estado 'page'
   const renderPage = () => {
