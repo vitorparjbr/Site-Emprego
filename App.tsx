@@ -26,9 +26,9 @@ export const AppContext = React.createContext<{
   logout: () => void;
   register: (companyName: string, email: string, pass: string) => boolean;
   addJob: (job: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => void;
-  // NOVO: Função para atualizar uma vaga existente.
   updateJob: (jobId: string, jobData: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => void;
   addApplication: (jobId: string, application: Omit<Application, 'id' | 'date'>) => void;
+  deleteJob: (jobId: string) => void;
 } | null>(null);
 
 // Componente principal da aplicação
@@ -84,7 +84,7 @@ const App: React.FC = () => {
     const newJob: Job = {
       ...jobData,
       id: `job-${Date.now()}`,
-      postedDate: new Date().toISOString().split('T')[0],
+      postedDate: new Date().toISOString(),
       employerId: loggedInEmployer.id,
       applications: [],
     };
@@ -106,6 +106,11 @@ const App: React.FC = () => {
       // Se não for a vaga que queremos editar, retorna a vaga sem modificação.
       return job;
     }));
+  }, []);
+
+  // NOVO: Função para excluir uma vaga existente.
+  const deleteJob = useCallback((jobId: string) => {
+    setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
   }, []);
 
   // Função para adicionar uma nova candidatura a uma vaga
@@ -153,6 +158,7 @@ const App: React.FC = () => {
     register,
     addJob,
     updateJob, // Disponibiliza a nova função no contexto
+    deleteJob, // Disponibiliza a nova função de exclusão no contexto
     addApplication,
   }), [jobs, employers, loggedInEmployer, login, logout, register, addJob, updateJob, addApplication]);
 

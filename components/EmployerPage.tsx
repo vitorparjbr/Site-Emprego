@@ -7,6 +7,7 @@ import { UserIcon } from './icons/UserIcon';
 import { LockClosedIcon } from './icons/LockClosedIcon';
 import { BuildingOfficeIcon } from './icons/BuildingOfficeIcon';
 import { PencilIcon } from './icons/PencilIcon';
+import { XMarkIcon } from './icons/XMarkIcon';
 
 const EmployerPage: React.FC = () => {
   const context = useContext(AppContext);
@@ -25,7 +26,7 @@ const EmployerPage: React.FC = () => {
 
   if (!context) return <div>Carregando...</div>;
 
-  const { loggedInEmployer, login, logout, register, jobs } = context;
+  const { loggedInEmployer, login, logout, register, jobs, deleteJob } = context;
 
   // Memoiza a lista de vagas do empregador logado para otimização
   const employerJobs = useMemo(() => {
@@ -177,6 +178,17 @@ const EmployerPage: React.FC = () => {
                       title="Editar Vaga"
                     >
                         <PencilIcon className="h-4 w-4" />
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (window.confirm('Tem certeza que deseja excluir esta vaga?\nEsta ação não poderá ser desfeita.')) {
+                          deleteJob(job.id);
+                        }
+                      }} 
+                      className="p-2 text-sm text-white bg-red-600 rounded-full hover:bg-red-700"
+                      title="Excluir Vaga"
+                    >
+                        <XMarkIcon className="h-4 w-4" />
                     </button>
                     <button 
                       onClick={() => setSelectedJob(job)} 
