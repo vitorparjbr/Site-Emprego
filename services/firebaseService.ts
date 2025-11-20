@@ -19,6 +19,7 @@ import {
   orderBy,
   updateDoc,
   serverTimestamp,
+  getDocs,
   arrayUnion,
   getDoc
 } from 'firebase/firestore';
@@ -108,9 +109,28 @@ export const deleteJob = async (id: string) => {
 
 export const addApplication = async (jobId: string, application: any) => {
   if (!enabled || !db) throw new Error('Firebase not configured');
-  const ref = doc(db, 'jobs', jobId);
-  const appWithMeta = { ...application, id: `app-${Date.now()}`, date: new Date().toISOString() };
-  await updateDoc(ref, { applications: arrayUnion(appWithMeta) });
+  // Store applications in a subcollection under the job to avoid leaking candidates
+  const appsCol = collection(db, 'jobs', jobId, 'applications');
+  const appToSave = { ...application, date: new Date().toISOString() };
+  const ref = await addDoc(appsCol, appToSave);
+  return { id: ref.id, ...appToSave };
+};
+
+export const getApplications = async (jobId: string) => {
+  if (!enabled || !db) throw new Error('Firebase not configured');
+  const appsCol = collection(db, 'jobs', jobId, 'applications');
+  const snap = await getDocs(appsCol);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+};
+
+export const listenApplications = (jobId: string, cb: (apps: any[]) => void) => {
+  if (!enabled || !db) return () => {};
+  const q = query(collection(db, 'jobs', jobId, 'applications'), orderBy('date', 'desc'));
+  const unsub = onSnapshot(q, snapshot => {
+    const apps = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    cb(apps as any[]);
+  });
+  return unsub;
 };
 
 export const listenJobs = (cb: (jobs: any[]) => void) => {

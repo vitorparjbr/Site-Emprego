@@ -8,6 +8,7 @@ import { LockClosedIcon } from './icons/LockClosedIcon';
 import { BuildingOfficeIcon } from './icons/BuildingOfficeIcon';
 import { PencilIcon } from './icons/PencilIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
+import * as fb from '../services/firebaseService';
 
 const EmployerPage: React.FC = () => {
   const context = useContext(AppContext);
@@ -19,6 +20,7 @@ const EmployerPage: React.FC = () => {
   const [companyName, setCompanyName] = useState('');
   const [error, setError] = useState('');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJobApplications, setSelectedJobApplications] = useState<Application[]>([]);
   // NOVO: Estado para controlar qual vaga está em modo de edição.
   // Se for null, o formulário é para criar uma nova vaga.
   // Se contiver uma vaga, o formulário é para editar essa vaga.
@@ -109,6 +111,21 @@ const EmployerPage: React.FC = () => {
   }
 
   // 2. Se uma vaga foi selecionada, exibe a lista de candidatos para essa vaga
+  const handleViewCandidates = async (job: Job) => {
+    setSelectedJob(job);
+    // fetch applications from Firestore if enabled
+    if (fb.isEnabled()) {
+      try {
+        const apps = await fb.getApplications(job.id);
+        setSelectedJobApplications(apps as Application[]);
+      } catch (e) {
+        setSelectedJobApplications([]);
+      }
+    } else {
+      setSelectedJobApplications(job.applications || []);
+    }
+  };
+
   if (selectedJob) {
     return (
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
@@ -116,9 +133,9 @@ const EmployerPage: React.FC = () => {
                 &larr; Voltar para Vagas
             </button>
             <h2 className="text-2xl font-bold mb-4">Candidatos para: {selectedJob.title}</h2>
-            {selectedJob.applications.length > 0 ? (
+            {selectedJobApplications.length > 0 ? (
                 <div className="space-y-4">
-                    {selectedJob.applications.map(app => (
+                    {selectedJobApplications.map(app => (
                         <div key={app.id} className="p-4 border rounded-md dark:border-gray-700">
                             <p><strong>Nome:</strong> {app.fullName}</p>
                             <p><strong>Email:</strong> <a href={`mailto:${app.email}`} className="text-blue-500 hover:underline">{app.email}</a></p>
@@ -193,7 +210,7 @@ const EmployerPage: React.FC = () => {
                         <XMarkIcon className="h-4 w-4" />
                     </button>
                     <button 
-                      onClick={() => setSelectedJob(job)} 
+                      onClick={() => handleViewCandidates(job)} 
                       className="px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
                     >
                         Ver Candidatos
