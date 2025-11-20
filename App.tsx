@@ -11,6 +11,7 @@ import HomePage from './components/HomePage';
 import EmployerPage from './components/EmployerPage';
 import NewsPage from './components/NewsPage';
 import AboutPage from './components/AboutPage';
+import * as fb from './services/firebaseService';
 
 // Criação do Contexto da Aplicação (AppContext)
 // O Contexto permite compartilhar o estado e as funções globalmente entre os componentes,
@@ -82,6 +83,49 @@ const App: React.FC = () => {
   const logout = useCallback(() => {
     setLoggedInEmployer(null);
   }, []);
+
+  // Se o Firebase estiver habilitado, sincroniza com Firestore (jobs + auth)
+  useEffect(() => {
+    if (!fb.isEnabled()) return;
+    const unsubJobs = fb.listenJobs((fbJobs) => {
+      // Normaliza campos: createdAt -> postedDate (ISO string)
+      const normalized = fbJobs.map(j => ({
+        id: j.id,
+        employerId: j.employerId,
+        title: j.title,
+        companyName: j.companyName,
+        location: j.location,
+        salary: j.salary,
+        benefits: j.benefits,
+        workHours: j.workHours,
+        workSchedule: j.workSchedule,
+        workScale: j.workScale,
+        requirements: j.requirements || { },
+        postedDate: j.createdAt && j.createdAt.toDate ? j.createdAt.toDate().toISOString() : (j.createdAt || new Date().toISOString()),
+        applications: j.applications || [],
+        resumePreference: j.resumePreference || 'file'
+      }));
+      setJobs(normalized as Job[]);
+    });
+
+    const unsubAuth = fb.onAuthChanged(async (user) => {
+      if (!user) {
+        setLoggedInEmployer(null);
+        return;
+      }
+      try {
+        const emp = await fb.getEmployer(user.uid);
+        if (emp) setLoggedInEmployer(emp as Employer);
+      } catch (e) {
+        // ignore
+      }
+    });
+
+    return () => {
+      try { unsubJobs(); } catch (e) {}
+      try { unsubAuth(); } catch (e) {}
+    };
+  }, []);
   
   // Função para registrar um novo empregador
   const register = useCallback((companyName: string, email: string, pass: string): boolean => {
@@ -103,6 +147,12 @@ const App: React.FC = () => {
 
   // Função para adicionar uma nova vaga de emprego
   const addJob = useCallback((jobData: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => {
+    if (fb.isEnabled()) {
+      if (!loggedInEmployer) return;
+      // Envia para Firestore; o listener sincronizará o estado local
+      fb.addJob(jobData, loggedInEmployer.id).catch(() => {});
+      return;
+    }
     if (!loggedInEmployer) return;
     const newJob: Job = {
       ...jobData,
@@ -116,6 +166,10 @@ const App: React.FC = () => {
 
   // NOVO: Função para atualizar os dados de uma vaga existente.
   const updateJob = useCallback((jobId: string, jobData: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => {
+    if (fb.isEnabled()) {
+      fb.updateJob(jobId, jobData).catch(() => {});
+      return;
+    }
     setJobs(prevJobs => prevJobs.map(job => {
       // Se o ID da vaga for o mesmo que estamos atualizando...
       if (job.id === jobId) {
@@ -133,11 +187,19 @@ const App: React.FC = () => {
 
   // NOVO: Função para excluir uma vaga existente.
   const deleteJob = useCallback((jobId: string) => {
+    if (fb.isEnabled()) {
+      fb.deleteJob(jobId).catch(() => {});
+      return;
+    }
     setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
   }, []);
 
   // Função para adicionar uma nova candidatura a uma vaga
   const addApplication = useCallback((jobId: string, applicationData: Omit<Application, 'id' | 'date'>) => {
+    if (fb.isEnabled()) {
+      fb.addApplication(jobId, applicationData).catch(() => {});
+      return;
+    }
     const newApplication: Application = {
         ...applicationData,
         id: `app-${Date.now()}`,
