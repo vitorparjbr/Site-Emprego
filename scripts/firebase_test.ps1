@@ -1,6 +1,7 @@
 $apiKey = 'AIzaSyCke9Nk3UncQP9XetppwTIhb5UaN-tDMgY'
 $projectId = 'site-de-emprego-8d79f'
-$email = "copilot.test+1@example.com"
+$rand = Get-Random
+$email = "copilot.test+$rand@example.com"
 $password = "TestPass123!"
 $companyName = "Empresa Teste Copilot"
 Write-Output "[TEST] Creating test user $email..."
