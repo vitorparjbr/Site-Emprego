@@ -5,7 +5,9 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  User
+  User,
+  setPersistence,
+  browserLocalPersistence
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -36,14 +38,23 @@ const enabled = Boolean(import.meta.env.VITE_FIREBASE_API_KEY);
 
 let auth: ReturnType<typeof getAuth> | null = null;
 let db: ReturnType<typeof getFirestore> | null = null;
+let persistenceAvailable = false;
 
 if (enabled) {
   const app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
+  // Try to set auth persistence to local (keeps session across reloads).
+  // Some privacy-focused browsers may reject this; we record availability.
+  setPersistence(auth, browserLocalPersistence).then(() => {
+    persistenceAvailable = true;
+  }).catch(() => {
+    persistenceAvailable = false;
+  });
 }
 
 export const isEnabled = () => enabled;
+export const isPersistenceAvailable = () => persistenceAvailable;
 
 // Auth helpers
 export const signUp = async (companyName: string, email: string, password: string) => {

@@ -237,7 +237,9 @@ const App: React.FC = () => {
 
   // Sincroniza mudanças importantes com o localStorage para persistência entre reloads
   useEffect(() => {
-    if (fb.isEnabled()) return;
+    // Só evita salvar no localStorage quando Firebase está habilitado
+    // e o Auth/Storage do navegador oferece persistência.
+    if (fb.isEnabled() && fb.isPersistenceAvailable()) return;
     try {
       localStorage.setItem('jobs', JSON.stringify(jobs));
     } catch (e) {
@@ -246,7 +248,7 @@ const App: React.FC = () => {
   }, [jobs]);
 
   useEffect(() => {
-    if (fb.isEnabled()) return;
+    if (fb.isEnabled() && fb.isPersistenceAvailable()) return;
     try {
       localStorage.setItem('employers', JSON.stringify(employers));
     } catch (e) {
@@ -255,7 +257,7 @@ const App: React.FC = () => {
   }, [employers]);
 
   useEffect(() => {
-    if (fb.isEnabled()) return;
+    if (fb.isEnabled() && fb.isPersistenceAvailable()) return;
     try {
       if (loggedInEmployer) {
         localStorage.setItem('loggedInEmployer', JSON.stringify(loggedInEmployer));
