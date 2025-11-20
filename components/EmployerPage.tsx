@@ -35,9 +35,10 @@ const EmployerPage: React.FC = () => {
   }, [jobs, loggedInEmployer]);
 
   // Função para tratar o submit do formulário de login
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!login(email, password)) {
+    const ok = await login(email, password);
+    if (!ok) {
       setError('E-mail ou senha inválidos.');
     } else {
       setError('');
@@ -45,9 +46,10 @@ const EmployerPage: React.FC = () => {
   };
   
   // Função para tratar o submit do formulário de registro
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!register(companyName, email, password)) {
+    const ok = await register(companyName, email, password);
+    if (!ok) {
       setError('Este e-mail já está em uso.');
     } else {
       setError('');

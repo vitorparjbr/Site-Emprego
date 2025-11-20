@@ -23,9 +23,9 @@ export const AppContext = React.createContext<{
   newsContent: NewsArticle[]; 
   aboutContent: string;
   setPage: (page: Page) => void;
-  login: (email: string, pass: string) => boolean;
+  login: (email: string, pass: string) => Promise<boolean>;
   logout: () => void;
-  register: (companyName: string, email: string, pass: string) => boolean;
+  register: (companyName: string, email: string, pass: string) => Promise<boolean>;
   addJob: (job: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => void;
   updateJob: (jobId: string, jobData: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => void;
   addApplication: (jobId: string, application: Omit<Application, 'id' | 'date'>) => void;
@@ -69,7 +69,16 @@ const App: React.FC = () => {
   // evitando que ela seja recriada a cada renderização. Isso otimiza a performance.
 
   // Função para realizar o login do empregador
-  const login = useCallback((email: string, pass: string): boolean => {
+  const login = useCallback(async (email: string, pass: string): Promise<boolean> => {
+    if (fb.isEnabled()) {
+      try {
+        await fb.signIn(email, pass);
+        setPage('employer');
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
     const employer = employers.find(e => e.email === email && e.password === pass);
     if (employer) {
       setLoggedInEmployer(employer);
@@ -81,6 +90,9 @@ const App: React.FC = () => {
 
   // Função para realizar o logout
   const logout = useCallback(() => {
+    if (fb.isEnabled()) {
+      fb.signOutUser().catch(() => {});
+    }
     setLoggedInEmployer(null);
   }, []);
 
@@ -128,7 +140,17 @@ const App: React.FC = () => {
   }, []);
   
   // Função para registrar um novo empregador
-  const register = useCallback((companyName: string, email: string, pass: string): boolean => {
+  const register = useCallback(async (companyName: string, email: string, pass: string): Promise<boolean> => {
+    if (fb.isEnabled()) {
+      try {
+        const emp = await fb.signUp(companyName, email, pass);
+        setLoggedInEmployer(emp as Employer);
+        setPage('employer');
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
     // Verifica se o e-mail já existe para evitar duplicatas
     if (employers.some(e => e.email === email)) {
         return false;
@@ -215,6 +237,7 @@ const App: React.FC = () => {
 
   // Sincroniza mudanças importantes com o localStorage para persistência entre reloads
   useEffect(() => {
+    if (fb.isEnabled()) return;
     try {
       localStorage.setItem('jobs', JSON.stringify(jobs));
     } catch (e) {
@@ -223,6 +246,7 @@ const App: React.FC = () => {
   }, [jobs]);
 
   useEffect(() => {
+    if (fb.isEnabled()) return;
     try {
       localStorage.setItem('employers', JSON.stringify(employers));
     } catch (e) {
@@ -231,6 +255,7 @@ const App: React.FC = () => {
   }, [employers]);
 
   useEffect(() => {
+    if (fb.isEnabled()) return;
     try {
       if (loggedInEmployer) {
         localStorage.setItem('loggedInEmployer', JSON.stringify(loggedInEmployer));
