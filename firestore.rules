@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Jobs: leitura pública (lista e detalhes), escrita apenas pelo empregador dono
+    match /jobs/{jobId} {
+      // Qualquer usuário pode ler vagas
+      allow read: if true;
+
+      // Criação: somente se autenticado e o employerId enviado for igual ao uid autenticado
+      allow create: if request.auth != null
+                    && request.resource.data.employerId is string
+                    && request.resource.data.employerId == request.auth.uid;
+
+      // Atualização/Remoção: apenas o dono da vaga (employerId) pode alterar/excluir
+      allow update, delete: if request.auth != null
+                            && resource.data.employerId == request.auth.uid;
+    }
+
+    // Subcoleção de candidaturas: candidatos podem criar (formular), apenas o empregador dono pode ler/editar/remover
+    match /jobs/{jobId}/applications/{appId} {
+      // Qualquer pessoa (mesmo não autenticada) pode submeter uma candidatura
+      allow create: if true;
+
+      // Apenas o empregador dono da vaga pode ler as candidaturas
+      allow read: if request.auth != null
+                  && get(/databases/$(database)/documents/jobs/$(jobId)).data.employerId == request.auth.uid;
+
+      // Apenas o empregador dono pode atualizar/remover candidaturas (por exemplo, marcar como lida)
+      allow update, delete: if request.auth != null
+                            && get(/databases/$(database)/documents/jobs/$(jobId)).data.employerId == request.auth.uid;
+    }
+
+    // Documentos de empregadores: somente o próprio usuário pode criar/ler/atualizar/excluir seu documento
+    match /employers/{userId} {
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Negar por padrão (não é necessário declarar explicitamente, mas serve como referência)
+  }
+}
