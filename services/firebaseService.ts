@@ -87,19 +87,33 @@ export const getEmployer = async (uid: string) => {
 // Jobs helpers
 export const addJob = async (job: any, employerId: string) => {
   if (!enabled || !db) throw new Error('Firebase not configured');
-  const jobToSave = {
-    ...job,
+  // Remove campos undefined para evitar erro do Firestore
+  const jobToSave: any = {
     employerId,
     createdAt: serverTimestamp(),
   };
+  Object.entries(job).forEach(([key, value]) => {
+    if (value !== undefined) {
+      jobToSave[key] = value;
+    }
+  });
   const ref = await addDoc(collection(db, 'jobs'), jobToSave);
   return { id: ref.id, ...jobToSave };
 };
 
 export const updateJob = async (id: string, jobData: any) => {
   if (!enabled || !db) throw new Error('Firebase not configured');
+  // Remove campos undefined para evitar erro do Firestore
+  const dataToUpdate: any = {
+    updatedAt: serverTimestamp(),
+  };
+  Object.entries(jobData).forEach(([key, value]) => {
+    if (value !== undefined) {
+      dataToUpdate[key] = value;
+    }
+  });
   const ref = doc(db, 'jobs', id);
-  await updateDoc(ref, { ...jobData, updatedAt: serverTimestamp() });
+  await updateDoc(ref, dataToUpdate);
 };
 
 export const deleteJob = async (id: string) => {
