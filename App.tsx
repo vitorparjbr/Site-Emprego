@@ -170,12 +170,22 @@ const App: React.FC = () => {
   // Função para adicionar uma nova vaga de emprego
   const addJob = useCallback((jobData: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => {
     if (fb.isEnabled()) {
-      if (!loggedInEmployer) return;
+      if (!loggedInEmployer) {
+        // Usuário não está logado — informar ao usuário para evitar operação silenciosa
+        try { window.alert('Você precisa estar logado como empregador para publicar vagas.'); } catch (e) {}
+        return;
+      }
       // Envia para Firestore; o listener sincronizará o estado local
-      fb.addJob(jobData, loggedInEmployer.id).catch(() => {});
+      fb.addJob(jobData, loggedInEmployer.id).catch((err) => {
+        // Mostra erro para o empregador (ajuda a debugar rules/erros de rede)
+        try { window.alert('Falha ao publicar a vaga: ' + (err?.message || String(err))); } catch (e) {}
+      });
       return;
     }
-    if (!loggedInEmployer) return;
+    if (!loggedInEmployer) {
+      try { window.alert('Você precisa estar logado como empregador para publicar vagas.'); } catch (e) {}
+      return;
+    }
     const newJob: Job = {
       ...jobData,
       id: `job-${Date.now()}`,
