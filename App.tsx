@@ -101,23 +101,42 @@ const App: React.FC = () => {
     if (!fb.isEnabled()) return;
     const unsubJobs = fb.listenJobs((fbJobs) => {
       // Normaliza campos: createdAt -> postedDate (ISO string)
-      const normalized = fbJobs.map(j => ({
-        id: j.id,
-        employerId: j.employerId,
-        title: j.title,
-        companyName: j.companyName,
-        location: j.location,
-        salary: j.salary,
-        benefits: j.benefits,
-        workHours: j.workHours,
-        workSchedule: j.workSchedule,
-        workScale: j.workScale,
-        requirements: j.requirements || { },
-        postedDate: j.createdAt && j.createdAt.toDate ? j.createdAt.toDate().toISOString() : (j.createdAt || new Date().toISOString()),
-        applications: j.applications || [],
-        resumePreference: j.resumePreference || 'file'
-      }));
+      const normalized = fbJobs.map(j => {
+        // Converte createdAt (Timestamp do Firebase) para ISO string
+        let postedDate = new Date().toISOString();
+        if (j.createdAt) {
+          if (typeof j.createdAt === 'string') {
+            postedDate = j.createdAt; // já é string
+          } else if (typeof j.createdAt === 'object' && j.createdAt.toDate) {
+            postedDate = j.createdAt.toDate().toISOString(); // Firestore Timestamp
+          } else if (j.createdAt instanceof Date) {
+            postedDate = j.createdAt.toISOString(); // Date object
+          }
+        }
+        return {
+          id: j.id,
+          employerId: j.employerId,
+          title: j.title,
+          companyName: j.companyName,
+          location: j.location,
+          salary: j.salary,
+          benefits: j.benefits,
+          workHours: j.workHours,
+          workSchedule: j.workSchedule,
+          workScale: j.workScale,
+          requirements: j.requirements || { },
+          postedDate,
+          applications: j.applications || [],
+          resumePreference: j.resumePreference || 'file'
+        };
+      });
       setJobs(normalized as Job[]);
+      // Também sincroniza com localStorage como fallback
+      try {
+        localStorage.setItem('jobs', JSON.stringify(normalized));
+      } catch (e) {
+        // ignorar erro de storage
+      }
     });
 
     const unsubAuth = fb.onAuthChanged(async (user) => {
@@ -246,8 +265,9 @@ const App: React.FC = () => {
   }, []);
 
   // Sincroniza mudanças importantes com o localStorage para persistência entre reloads
+  // (apenas quando Firebase está desabilitado; quando habilitado, o listener já sincroniza)
   useEffect(() => {
-    if (fb.isEnabled()) return;
+    if (fb.isEnabled()) return; // Firebase já sincroniza com localStorage no listener
     try {
       localStorage.setItem('jobs', JSON.stringify(jobs));
     } catch (e) {
