@@ -1,5 +1,5 @@
 
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useState, useMemo, useEffect } from 'react';
 import { AppContext } from '../App';
 import { Job, Application } from '../types';
 import PostJobForm from './PostJobForm';
@@ -25,6 +25,8 @@ const EmployerPage: React.FC = () => {
   // Se for null, o formulário é para criar uma nova vaga.
   // Se contiver uma vaga, o formulário é para editar essa vaga.
   const [editingJob, setEditingJob] = useState<Job | null>(null);
+  // Estado para armazenar contagem de aplicações por job ID
+  const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
 
   if (!context) return <div>Carregando...</div>;
 
@@ -35,6 +37,26 @@ const EmployerPage: React.FC = () => {
     if (!loggedInEmployer) return [];
     return jobs.filter(job => job.employerId === loggedInEmployer.id);
   }, [jobs, loggedInEmployer]);
+
+  // Carrega contagem de aplicações para cada vaga do empregador quando Firebase está habilitado
+  useEffect(() => {
+    if (!fb.isEnabled() || !loggedInEmployer) return;
+    
+    const loadApplicationCounts = async () => {
+      const counts: Record<string, number> = {};
+      for (const job of employerJobs) {
+        try {
+          const apps = await fb.getApplications(job.id);
+          counts[job.id] = apps.length;
+        } catch (e) {
+          counts[job.id] = 0;
+        }
+      }
+      setApplicationCounts(counts);
+    };
+    
+    loadApplicationCounts();
+  }, [employerJobs, loggedInEmployer]);
 
   // Função para tratar o submit do formulário de login
   const handleLogin = async (e: React.FormEvent) => {
@@ -187,7 +209,7 @@ const EmployerPage: React.FC = () => {
               <div key={job.id} className="p-4 border rounded-md dark:border-gray-700 flex justify-between items-center gap-2">
                 <div>
                   <h3 className="font-semibold">{job.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{job.location} - {job.applications.length} candidato(s)</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{job.location} - {applicationCounts[job.id] ?? job.applications.length} candidato(s)</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                     {/* NOVO: Botão para colocar a vaga em modo de edição */}
