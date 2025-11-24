@@ -133,5 +133,5 @@ export const MOCK_ABOUT_US = `
   <li><strong>Para Candidatos:</strong> Oferecemos uma vasta gama de vagas em todo o Brasil, com filtros de busca avançados, alertas de vagas personalizadas e um processo de candidatura simplificado. Tudo de forma 100% gratuita.</li>
   <li><strong>Para Empregadores:</strong> Disponibilizamos uma plataforma robusta para publicação e gerenciamento de vagas, com um painel de controle exclusivo para acompanhar candidaturas, visualizar currículos e entrar em contato com os talentos mais promissores do mercado.</li>
 </ul>
-<p class="mt-4 text-gray-700 dark:text-gray-300">Nosso compromisso é com a transparência, a inovação e o sucesso de nossos usuários. Junte-se a nós e encontre hoje mesmo o seu próximo passo profissional ou o candidato ideal para sua equipe!</p>
+<p class="mt-4 text-gray-700 dark:text-gray-300">Nossso compromisso é com a transparência, a inovação e o sucesso de nossos usuários. Junte-se a nós e encontre hoje mesmo o seu próximo passo profissional ou o candidato ideal para sua equipe!</p>
 `;
