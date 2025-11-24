@@ -127,7 +127,7 @@ export const MOCK_NEWS: NewsArticle[] = [
 
 export const MOCK_ABOUT_US = `
 <h2 class="text-2xl font-bold mb-4 text-blue-500 dark:text-blue-400">Quem Somos</h2>
-<p class="mb-4 text-gray-700 dark:text-gray-300">A Job Finder Pro nasceu com a missão de simplificar e humanizar o processo de recrutamento e seleção. Acreditamos que conectar o talento certo à oportunidade certa pode transformar vidas e impulsionar negócios. Nossa plataforma foi desenhada para ser intuitiva, eficiente e acessível tanto para candidatos em busca de novos desafios quanto para empresas que procuram os melhores profissionais.</p>
+<p class="mb-4 text-gray-700 dark:text-gray-300">A Job Finder Pro nasceu com a missão de simplificar e humanizar o processo de recrutamento e seleção. Acreditamos que conectar o talento certo à oportunidade certa pode transformar vidas e impulsionar negócios. Nossa plataforma foi desenhada para ser intuitiva, eficiente e acessível tanto para candidatos em busca de novas oportunidades quanto para empresas que procuram os melhores profissionais.</p>
 <h3 class="text-xl font-semibold mb-2">Nossos Serviços</h3>
 <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
   <li><strong>Para Candidatos:</strong> Oferecemos uma vasta gama de vagas em todo o Brasil, com filtros de busca avançados, alertas de vagas personalizadas e um processo de candidatura simplificado. Tudo de forma 100% gratuita.</li>
