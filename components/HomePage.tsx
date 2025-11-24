@@ -48,7 +48,7 @@ const HomePage: React.FC = () => {
     <div className="space-y-8">
       {/* Seção de busca e filtro */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-4">Encontre a sua próxima oportunidade</h1>
+        <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-4">Sua oportunidade está aqui</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
