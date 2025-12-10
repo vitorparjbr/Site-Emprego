@@ -185,7 +185,6 @@ const FeedbackPage: React.FC = () => {
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <p className="font-semibold text-gray-800 dark:text-white">{fb.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{fb.email}</p>
                     </div>
                     <span className="text-xs bg-blue-200 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
                       {fb.type === 'sugestao' && 'Sugestão'}
