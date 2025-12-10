@@ -37,6 +37,18 @@ service cloud.firestore {
       allow read, update, delete: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Feedbacks: leitura pública e criação pública (qualquer usuário pode enviar e ver feedbacks)
+    match /feedback/{feedbackId} {
+      // Qualquer usuário pode ler os feedbacks
+      allow read: if true;
+
+      // Qualquer usuário pode enviar um feedback
+      allow create: if true;
+
+      // Atualização/remoção não permitidas via cliente
+      allow update, delete: if false;
+    }
+
     // Negar por padrão (não é necessário declarar explicitamente, mas serve como referência)
   }
 }
