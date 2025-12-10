@@ -183,3 +183,25 @@ export const listenJobs = (cb: (jobs: any[]) => void) => {
   });
   return unsub;
 };
+
+// Feedback helpers
+export const addFeedback = async (feedback: any) => {
+  if (!enabled || !db) throw new Error('Firebase not configured');
+  const cleaned = cleanData(feedback);
+  const feedbackToSave = {
+    ...cleaned,
+    createdAt: serverTimestamp(),
+  };
+  const ref = await addDoc(collection(db, 'feedback'), feedbackToSave);
+  return { id: ref.id, ...feedbackToSave };
+};
+
+export const listenFeedback = (cb: (feedbacks: any[]) => void) => {
+  if (!enabled || !db) return () => {};
+  const q = query(collection(db, 'feedback'), orderBy('createdAt', 'desc'));
+  const unsub = onSnapshot(q, snapshot => {
+    const feedbacks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    cb(feedbacks as any[]);
+  });
+  return unsub;
+};

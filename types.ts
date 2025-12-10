@@ -1,5 +1,5 @@
 
-export type Page = 'home' | 'employer' | 'news' | 'about';
+export type Page = 'home' | 'employer' | 'news' | 'about' | 'feedback';
 
 export interface Application {
   id: string;

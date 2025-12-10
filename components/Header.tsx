@@ -76,9 +76,15 @@ const Header: React.FC = () => {
                     </button>
                     <button
                       onClick={() => handleNavClick('about')}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 last:rounded-b-md transition-colors"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors"
                     >
                       Quem Somos
+                    </button>
+                    <button
+                      onClick={() => handleNavClick('feedback')}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 last:rounded-b-md transition-colors"
+                    >
+                      Feedback
                     </button>
                   </div>
                 )}
