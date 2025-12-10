@@ -146,7 +146,7 @@ const FeedbackPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Feedback & Sugestões</h1>
+        <h1 className="text-3xl font-bold">Comentários</h1>
         <div className="flex items-center gap-3">
           {loggedInUser && (
             <p className="text-sm text-gray-700 dark:text-gray-300">Olá, <strong>{loggedInUser.name}</strong></p>
