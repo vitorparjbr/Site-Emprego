@@ -32,6 +32,7 @@ const FeedbackPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Ouvir feedbacks do Firestore em tempo real
   useEffect(() => {
@@ -132,6 +133,7 @@ const FeedbackPage: React.FC = () => {
       }
       setMessage('');
       setError('');
+      setIsModalOpen(false);
     } catch (err) {
       console.error('Feedback error:', err);
       setError('Erro ao enviar feedback. Tente novamente.');
@@ -140,134 +142,44 @@ const FeedbackPage: React.FC = () => {
     }
   };
 
-  // Se não está logado, mostra formulário de login/registro
-  if (!loggedInUser) {
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-          <div className="flex justify-center mb-6">
-            <button
-              onClick={() => setIsLoginView(true)}
-              className={`px-4 py-2 font-semibold ${isLoginView ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-            >
-              Login
-            </button>
-            <button
-              onClick={() => setIsLoginView(false)}
-              className={`px-4 py-2 font-semibold ${!isLoginView ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
-            >
-              Cadastro
-            </button>
-          </div>
-
-          <form onSubmit={isLoginView ? handleLogin : handleRegister} className="space-y-6">
-            <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">
-              {isLoginView ? 'Acesso' : 'Criar Conta'}
-            </h2>
-
-            {!isLoginView && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">E-mail</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-              />
-            </div>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md"
-            >
-              {isLoginView ? 'Entrar' : 'Cadastrar'}
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // Se está logado, mostra formulário de feedback e lista
+  // Renderização unificada: mostrar lista sempre e usar modal para login/enviar
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Feedback & Sugestões</h1>
-        <button onClick={handleLogout} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
-          Sair
-        </button>
+        <div className="flex items-center gap-3">
+          {loggedInUser && (
+            <p className="text-sm text-gray-700 dark:text-gray-300">Olá, <strong>{loggedInUser.name}</strong></p>
+          )}
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          >
+            Enviar Feedback
+          </button>
+          {loggedInUser && (
+            <button onClick={handleLogout} className="px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+              Sair
+            </button>
+          )}
+        </div>
       </div>
 
-      <p className="text-lg text-gray-700 dark:text-gray-300">
-        Bem-vindo(a), <strong>{loggedInUser.name}</strong>! Compartilhe suas opiniões, críticas, dúvidas ou sugestões.
-      </p>
+      <p className="text-lg text-gray-700 dark:text-gray-300">Compartilhe suas opiniões, críticas, dúvidas ou sugestões. Todos os feedbacks abaixo são públicos.</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Formulário de Feedback */}
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Enviar Feedback</h2>
-          <form onSubmit={handleSubmitFeedback} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Feedback</label>
-              <select
-                value={feedbackType}
-                onChange={(e) => setFeedbackType(e.target.value as any)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-              >
-                <option value="sugestao">💡 Sugestão</option>
-                <option value="elogio">👍 Elogio</option>
-                <option value="critica">⚠️ Crítica</option>
-                <option value="duvida">❓ Dúvida</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Mensagem</label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={5}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600"
-                placeholder="Escreva sua mensagem aqui..."
-              />
-            </div>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
+        {/* Painel esquerdo: instruções / botão */}
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Enviar Feedback</h2>
+            <p className="mb-4 text-gray-600 dark:text-gray-300">Clique em "Enviar Feedback" para abrir o modal de login (se necessário) e enviar seu comentário.</p>
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md disabled:bg-gray-400"
+              onClick={() => setIsModalOpen(true)}
+              className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              {isSubmitting ? 'Enviando...' : 'Enviar Feedback'}
+              Enviar Feedback
             </button>
-          </form>
+          </div>
         </div>
 
         {/* Lista de Feedbacks */}
@@ -302,6 +214,123 @@ const FeedbackPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal: login/registro ou formulário de envio */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Enviar Feedback</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-600 hover:text-gray-800">Fechar</button>
+            </div>
+
+            {!loggedInUser ? (
+              <div>
+                <div className="flex justify-center mb-4">
+                  <button
+                    onClick={() => setIsLoginView(true)}
+                    className={`px-4 py-2 font-semibold ${isLoginView ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => setIsLoginView(false)}
+                    className={`px-4 py-2 font-semibold ${!isLoginView ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                  >
+                    Cadastro
+                  </button>
+                </div>
+
+                <form onSubmit={isLoginView ? handleLogin : handleRegister} className="space-y-4">
+                  {!isLoginView && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome</label>
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        placeholder="Seu nome"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">E-mail</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder="seu@exemplo.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha</label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder="Mínimo 6 caracteres"
+                    />
+                  </div>
+
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
+
+                  <div className="flex gap-2">
+                    <button type="submit" className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md">{isLoginView ? 'Entrar' : 'Cadastrar'}</button>
+                    <button type="button" onClick={() => setIsModalOpen(false)} className="py-2 px-4 border rounded-md">Cancelar</button>
+                  </div>
+                </form>
+              </div>
+            ) : (
+              <div>
+                <form onSubmit={handleSubmitFeedback} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Feedback</label>
+                    <select
+                      value={feedbackType}
+                      onChange={(e) => setFeedbackType(e.target.value as any)}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                      title="Tipo de feedback"
+                    >
+                      <option value="sugestao">Sugestão</option>
+                      <option value="elogio">Elogio</option>
+                      <option value="critica">Crítica</option>
+                      <option value="duvida">Dúvida</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Mensagem</label>
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      rows={5}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                      placeholder="Escreva sua mensagem aqui..."
+                    />
+                  </div>
+
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
+
+                  <div className="flex gap-2">
+                    <button type="submit" disabled={isSubmitting} className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md">
+                      {isSubmitting ? 'Enviando...' : 'Enviar Feedback'}
+                    </button>
+                    <button type="button" onClick={() => setIsModalOpen(false)} className="py-2 px-4 border rounded-md">Fechar</button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
