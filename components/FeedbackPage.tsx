@@ -81,14 +81,20 @@ const FeedbackPage: React.FC = () => {
 
     try {
       if (fb.isEnabled()) {
-        // Salvar no Firestore
-        await fb.addFeedback(newFeedback);
+        try {
+          // Tentar salvar no Firestore
+          await fb.addFeedback(newFeedback);
+        } catch (fbError) {
+          console.warn('Firestore error:', fbError);
+          // Se Firestore falhar, continua com local apenas
+        }
       }
-      // Adicionar à lista local
+      // Adicionar à lista local sempre
       setFeedbackList([newFeedback, ...feedbackList]);
       setMessage('');
       setError('');
     } catch (err) {
+      console.error('Feedback error:', err);
       setError('Erro ao enviar feedback. Tente novamente.');
     } finally {
       setIsSubmitting(false);
