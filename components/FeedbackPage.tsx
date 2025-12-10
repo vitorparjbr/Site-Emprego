@@ -165,7 +165,6 @@ const FeedbackPage: React.FC = () => {
         {/* Painel esquerdo: instruções / botão */}
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Enviar Feedback</h2>
             <p className="mb-4 text-gray-600 dark:text-gray-300">Clique aqui para enviar o seu comentário</p>
             <button
               onClick={() => setIsModalOpen(true)}
