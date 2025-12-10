@@ -61,17 +61,9 @@ const Header: React.FC = () => {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
+                  className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   Mais
-                  <svg
-                    className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                  </svg>
                 </button>
                 
                 {isDropdownOpen && (
@@ -80,13 +72,13 @@ const Header: React.FC = () => {
                       onClick={() => handleNavClick('news')}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 first:rounded-t-md transition-colors"
                     >
-                      📰 Notícias
+                      Notícias
                     </button>
                     <button
                       onClick={() => handleNavClick('about')}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 last:rounded-b-md transition-colors"
                     >
-                      ℹ️ Quem Somos
+                      Quem Somos
                     </button>
                   </div>
                 )}
