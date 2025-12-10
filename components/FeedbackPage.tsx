@@ -188,10 +188,10 @@ const FeedbackPage: React.FC = () => {
                       <p className="text-xs text-gray-500 dark:text-gray-400">{fb.email}</p>
                     </div>
                     <span className="text-xs bg-blue-200 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
-                      {fb.type === 'sugestao' && '💡 Sugestão'}
-                      {fb.type === 'elogio' && '👍 Elogio'}
-                      {fb.type === 'critica' && '⚠️ Crítica'}
-                      {fb.type === 'duvida' && '❓ Dúvida'}
+                      {fb.type === 'sugestao' && 'Sugestão'}
+                      {fb.type === 'elogio' && 'Elogio'}
+                      {fb.type === 'critica' && 'Crítica'}
+                      {fb.type === 'duvida' && 'Dúvida'}
                     </span>
                   </div>
                   <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">{fb.message}</p>
