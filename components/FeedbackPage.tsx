@@ -151,12 +151,6 @@ const FeedbackPage: React.FC = () => {
           {loggedInUser && (
             <p className="text-sm text-gray-700 dark:text-gray-300">Olá, <strong>{loggedInUser.name}</strong></p>
           )}
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          >
-            Enviar Feedback
-          </button>
           {loggedInUser && (
             <button onClick={handleLogout} className="px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
               Sair
@@ -165,14 +159,14 @@ const FeedbackPage: React.FC = () => {
         </div>
       </div>
 
-      <p className="text-lg text-gray-700 dark:text-gray-300">Compartilhe suas opiniões, críticas, dúvidas ou sugestões. Todos os feedbacks abaixo são públicos.</p>
+      <p className="text-lg text-gray-700 dark:text-gray-300">Compartilhe suas opiniões, críticas, dúvidas ou sugestões.</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Painel esquerdo: instruções / botão */}
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Enviar Feedback</h2>
-            <p className="mb-4 text-gray-600 dark:text-gray-300">Clique em "Enviar Feedback" para abrir o modal de login (se necessário) e enviar seu comentário.</p>
+            <p className="mb-4 text-gray-600 dark:text-gray-300">Clique aqui para enviar o seu comentário</p>
             <button
               onClick={() => setIsModalOpen(true)}
               className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
