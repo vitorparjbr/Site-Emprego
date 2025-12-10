@@ -33,6 +33,7 @@ const FeedbackPage: React.FC = () => {
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'recent' | 'oldest'>('recent');
 
   // Ouvir feedbacks do Firestore em tempo real
   useEffect(() => {
@@ -177,10 +178,27 @@ const FeedbackPage: React.FC = () => {
 
         {/* Lista de Feedbacks */}
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Feedbacks Recentes</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Feedbacks</h2>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as 'recent' | 'oldest')}
+              className="px-3 py-1 text-sm border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600"
+              title="Ordenar feedbacks"
+            >
+              <option value="recent">Mais recentes</option>
+              <option value="oldest">Mais antigos</option>
+            </select>
+          </div>
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {feedbackList.length > 0 ? (
-              feedbackList.map((fb) => (
+              [...feedbackList]
+                .sort((a, b) => {
+                  const dateA = new Date(a.date).getTime();
+                  const dateB = new Date(b.date).getTime();
+                  return sortOrder === 'recent' ? dateB - dateA : dateA - dateB;
+                })
+                .map((fb) => (
                 <div key={fb.id} className="p-4 border rounded-md dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                   <div className="flex justify-between items-start mb-2">
                     <div>
