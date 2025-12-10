@@ -18,13 +18,31 @@ const FeedbackPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const [loggedInUser, setLoggedInUser] = useState<{ email: string; name: string } | null>(null);
+  const [loggedInUser, setLoggedInUser] = useState<{ email: string; name: string } | null>(() => {
+    try {
+      const saved = localStorage.getItem('feedbackUser');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
 
   // Formulário de feedback
   const [feedbackType, setFeedbackType] = useState<'elogio' | 'critica' | 'duvida' | 'sugestao'>('sugestao');
   const [message, setMessage] = useState('');
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Ouvir feedbacks do Firestore em tempo real
+  useEffect(() => {
+    if (!fb.isEnabled()) return;
+    
+    const unsubscribe = fb.listenFeedback((feedbacks) => {
+      setFeedbackList(feedbacks);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   if (!context) return <div>Carregando...</div>;
 
@@ -35,7 +53,13 @@ const FeedbackPage: React.FC = () => {
       setError('Preencha e-mail e senha.');
       return;
     }
-    setLoggedInUser({ email, name: email.split('@')[0] });
+    const user = { email, name: email.split('@')[0] };
+    setLoggedInUser(user);
+    try {
+      localStorage.setItem('feedbackUser', JSON.stringify(user));
+    } catch (e) {
+      // ignorar erro de storage
+    }
     setError('');
     setEmail('');
     setPassword('');
@@ -51,7 +75,13 @@ const FeedbackPage: React.FC = () => {
       setError('Senha deve ter pelo menos 6 caracteres.');
       return;
     }
-    setLoggedInUser({ email, name });
+    const user = { email, name };
+    setLoggedInUser(user);
+    try {
+      localStorage.setItem('feedbackUser', JSON.stringify(user));
+    } catch (e) {
+      // ignorar erro de storage
+    }
     setError('');
     setName('');
     setEmail('');
@@ -60,6 +90,11 @@ const FeedbackPage: React.FC = () => {
 
   const handleLogout = () => {
     setLoggedInUser(null);
+    try {
+      localStorage.removeItem('feedbackUser');
+    } catch (e) {
+      // ignorar erro de storage
+    }
   };
 
   const handleSubmitFeedback = async (e: React.FormEvent) => {
@@ -82,15 +117,19 @@ const FeedbackPage: React.FC = () => {
     try {
       if (fb.isEnabled()) {
         try {
-          // Tentar salvar no Firestore
+          // Salvar no Firestore (listener vai atualizar a lista automaticamente)
           await fb.addFeedback(newFeedback);
         } catch (fbError) {
-          console.warn('Firestore error:', fbError);
-          // Se Firestore falhar, continua com local apenas
+          console.error('Firestore error:', fbError);
+          setError('Erro ao enviar feedback. Tente novamente.');
+          setIsSubmitting(false);
+          return;
         }
+      } else {
+        setError('Firebase não está configurado.');
+        setIsSubmitting(false);
+        return;
       }
-      // Adicionar à lista local sempre
-      setFeedbackList([newFeedback, ...feedbackList]);
       setMessage('');
       setError('');
     } catch (err) {
