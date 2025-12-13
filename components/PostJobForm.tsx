@@ -121,7 +121,7 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
 
     // Atualiza preferência de currículo quando muda o tipo de vaga
     useEffect(() => {
-        if (jobType === 'curso') {
+        if (jobType === 'curso' || jobType === 'jovem-aprendiz') {
             setResumePreference('none');
         } else if (resumePreference === 'none') {
             setResumePreference('file');
@@ -351,10 +351,10 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
                 </>
             )}
 
-            {/* Para Estágio, Jovem Aprendiz e Curso - campo único de requisitos */}
+            {/* Para Estágio, Jovem Aprendiz e Curso - campo único de requisitos sem label */}
             {(jobType === 'estagio' || jobType === 'jovem-aprendiz' || jobType === 'curso') && (
                 <TextAreaField 
-                    label="Requisitos para o Candidato" 
+                    label="" 
                     value={education} 
                     onChange={setEducation}
                     required
@@ -386,8 +386,8 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
                 />
             )}
 
-            {/* Preferência de Currículo - não aparece para Curso */}
-            {jobType !== 'curso' && (
+            {/* Preferência de Currículo - não aparece para Curso e Jovem Aprendiz */}
+            {jobType !== 'curso' && jobType !== 'jovem-aprendiz' && (
                 <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Preferência de Currículo</label>
                     <select 

@@ -219,7 +219,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
           <div className="p-6 border-t dark:border-gray-700 mt-auto space-y-4">
             <ShareButtons job={job} />
             {/* Botão de candidatura não aparece para Cursos */}
-            {job.jobType !== 'curso' && job.resumePreference !== 'none' && (
+            {job.jobType !== 'curso' && (
               <button
                 onClick={() => setShowApplicationForm(true)}
                 className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
