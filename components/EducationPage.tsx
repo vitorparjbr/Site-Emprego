@@ -12,7 +12,7 @@ const EducationPage: React.FC = () => {
 
       {/* Seção: Educação Financeira */}
       <section className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-        <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-6">💰 Educação Financeira e Econômica</h2>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Educação Financeira e Econômica</h2>
         
         <div className="space-y-6">
           <div>
@@ -49,7 +49,7 @@ const EducationPage: React.FC = () => {
 
       {/* Seção: Currículo */}
       <section className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-        <h2 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-6">📄 Preparo e Melhoria de Currículo</h2>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Preparo e Melhoria de Currículo</h2>
         
         <div className="space-y-6">
           <div>
@@ -92,7 +92,7 @@ const EducationPage: React.FC = () => {
 
       {/* Seção: Entrevista de Emprego */}
       <section className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-        <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-6">🎯 Como se Preparar para Entrevistas</h2>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Como se Preparar para Entrevistas</h2>
         
         <div className="space-y-6">
           <div>
