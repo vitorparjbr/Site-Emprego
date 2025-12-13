@@ -44,8 +44,8 @@ const JobCard: React.FC<JobCardProps> = ({ job, onJobClick, isFavorite = false, 
             }}
             className={`absolute top-4 right-4 p-2 rounded-full transition-all duration-200 ${
               isFavorite 
-                ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20' 
-                : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
+                ? 'text-blue-500 hover:text-blue-600 bg-blue-50 dark:bg-blue-900/20' 
+                : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20'
             }`}
             aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
             title={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
