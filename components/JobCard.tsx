@@ -53,6 +53,19 @@ const JobCard: React.FC<JobCardProps> = ({ job, onJobClick, isFavorite = false, 
           </button>
         )}
         <div>
+            {/* Badge do tipo de vaga */}
+            {job.jobType && (
+              <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium mb-2 ${
+                job.jobType === 'emprego' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                job.jobType === 'estagio' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                job.jobType === 'jovem-aprendiz' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+              }`}>
+                {job.jobType === 'emprego' ? 'Emprego' :
+                 job.jobType === 'estagio' ? 'Estágio' :
+                 job.jobType === 'jovem-aprendiz' ? 'Jovem Aprendiz' : 'Curso'}
+              </span>
+            )}
             {job.companyName && (
                 <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
                     <BuildingOfficeIcon className="h-4 w-4 mr-2" />

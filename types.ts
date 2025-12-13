@@ -1,6 +1,8 @@
 
 export type Page = 'home' | 'employer' | 'news' | 'about' | 'feedback' | 'education';
 
+export type JobType = 'emprego' | 'estagio' | 'jovem-aprendiz' | 'curso';
+
 export interface Application {
   id: string;
   fullName: string;
@@ -18,9 +20,12 @@ export interface Application {
 export interface Job {
   id: string;
   employerId: string;
+  jobType: JobType;
   title: string;
   companyName?: string;
+  area?: string; // Área/Setor
   location: string;
+  duration?: string; // Tempo/Duração do contrato (para estágio, jovem aprendiz, curso)
   salary?: string;
   benefits?: string;
   workHours?: string;
@@ -31,9 +36,11 @@ export interface Job {
     experience?: string;
     profile?: string;
   };
+  description?: string; // Descrição da Vaga
+  courseContact?: string; // Contato do curso (link, telefone, e-mail)
   postedDate: string;
   applications: Application[];
-  resumePreference: 'file' | 'text' | 'both';
+  resumePreference: 'file' | 'text' | 'both' | 'none';
 }
 
 export interface Employer {

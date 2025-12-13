@@ -157,8 +157,26 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
             <ApplicationForm job={job} onCancel={() => setShowApplicationForm(false)} onSuccess={handleApplySuccess} />
           ) : (
             <>
+              {/* Badge do tipo de vaga */}
+              {job.jobType && (
+                <div className="flex items-center gap-2">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    job.jobType === 'emprego' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                    job.jobType === 'estagio' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                    job.jobType === 'jovem-aprendiz' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+                    'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+                  }`}>
+                    {job.jobType === 'emprego' ? 'Emprego' :
+                     job.jobType === 'estagio' ? 'Estágio' :
+                     job.jobType === 'jovem-aprendiz' ? 'Jovem Aprendiz' : 'Curso'}
+                  </span>
+                </div>
+              )}
+
               {/* Detalhes principais da vaga */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <DetailItem label="Área/Setor" value={job.area} />
+                <DetailItem label="Duração" value={job.duration} />
                 <DetailItem label="Salário" value={job.salary} />
                 <DetailItem label="Benefícios" value={job.benefits} />
                 <DetailItem label="Carga Horária" value={job.workHours} />
@@ -166,6 +184,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
                 <DetailItem label="Escala de Trabalho" value={job.workScale} />
                 <DetailItem label="Data de Publicação" value={new Date(job.postedDate).toLocaleDateString('pt-BR')} />
               </div>
+
               {/* Requisitos da vaga */}
               <div>
                 <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Requisitos</h3>
@@ -175,6 +194,22 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
                     <DetailItem label="Perfil Profissional" value={job.requirements.profile} />
                 </div>
               </div>
+
+              {/* Descrição da Vaga (se houver) */}
+              {job.description && (
+                <div>
+                  <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Descrição da Vaga</h3>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{job.description}</p>
+                </div>
+              )}
+
+              {/* Contato do Curso (se for curso) */}
+              {job.courseContact && (
+                <div>
+                  <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Contato para Inscrição</h3>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{job.courseContact}</p>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -183,12 +218,15 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
         {!showApplicationForm && (
           <div className="p-6 border-t dark:border-gray-700 mt-auto space-y-4">
             <ShareButtons job={job} />
-            <button
-              onClick={() => setShowApplicationForm(true)}
-              className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Candidatar-se
-            </button>
+            {/* Botão de candidatura não aparece para Cursos */}
+            {job.jobType !== 'curso' && job.resumePreference !== 'none' && (
+              <button
+                onClick={() => setShowApplicationForm(true)}
+                className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Candidatar-se
+              </button>
+            )}
           </div>
         )}
       </div>
