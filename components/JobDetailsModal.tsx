@@ -3,10 +3,13 @@ import React, { useState } from 'react';
 import { Job } from '../types';
 import ApplicationForm from './ApplicationForm';
 import { XMarkIcon } from './icons/XMarkIcon';
+import { HeartIcon } from './icons/HeartIcon';
 
 interface JobDetailsModalProps {
   job: Job;
   onClose: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (jobId: string) => void;
 }
 
 // Componente auxiliar para exibir um item de detalhe (label e valor)
@@ -103,7 +106,7 @@ const ShareButtons: React.FC<{ job: Job }> = ({ job }) => {
   );
 };
 
-const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
+const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavorite = false, onToggleFavorite }) => {
   // Estado para controlar a exibição do formulário de candidatura dentro do modal
   const [showApplicationForm, setShowApplicationForm] = useState(false);
 
@@ -125,9 +128,26 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose }) => {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{job.title}</h2>
             <p className="text-gray-600 dark:text-gray-400">{job.companyName || 'Confidencial'} - {job.location}</p>
           </div>
-          <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Fechar modal">
-            <XMarkIcon className="h-6 w-6 text-gray-500 dark:text-gray-400" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Botão de favoritar */}
+            {onToggleFavorite && (
+              <button 
+                onClick={() => onToggleFavorite(job.id)}
+                className={`p-2 rounded-full transition-all duration-200 ${
+                  isFavorite 
+                    ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20' 
+                    : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
+                }`}
+                aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                title={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+              >
+                <HeartIcon className="h-6 w-6" filled={isFavorite} />
+              </button>
+            )}
+            <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Fechar modal">
+              <XMarkIcon className="h-6 w-6 text-gray-500 dark:text-gray-400" />
+            </button>
+          </div>
         </div>
 
         {/* Corpo do Modal (com scroll) */}

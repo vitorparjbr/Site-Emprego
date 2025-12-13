@@ -5,13 +5,16 @@ import { MapPinIcon } from './icons/MapPinIcon';
 import { ClockIcon } from './icons/ClockIcon';
 import { BuildingOfficeIcon } from './icons/BuildingOfficeIcon';
 import { ArrowRightIcon } from './icons/ArrowRightIcon';
+import { HeartIcon } from './icons/HeartIcon';
 
 interface JobCardProps {
   job: Job;
   onJobClick: (job: Job) => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (jobId: string) => void;
 }
 
-const JobCard: React.FC<JobCardProps> = ({ job, onJobClick }) => {
+const JobCard: React.FC<JobCardProps> = ({ job, onJobClick, isFavorite = false, onToggleFavorite }) => {
   const timeSince = (date: string) => {
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
     let interval = seconds / 31536000;
@@ -30,8 +33,26 @@ const JobCard: React.FC<JobCardProps> = ({ job, onJobClick }) => {
   return (
     <div 
         onClick={() => onJobClick(job)}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col justify-between cursor-pointer hover:shadow-xl hover:scale-105 transition-all duration-300"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col justify-between cursor-pointer hover:shadow-xl hover:scale-105 transition-all duration-300 relative"
     >
+        {/* Botão de favoritar */}
+        {onToggleFavorite && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(job.id);
+            }}
+            className={`absolute top-4 right-4 p-2 rounded-full transition-all duration-200 ${
+              isFavorite 
+                ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20' 
+                : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
+            }`}
+            aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+            title={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          >
+            <HeartIcon className="h-5 w-5" filled={isFavorite} />
+          </button>
+        )}
         <div>
             {job.companyName && (
                 <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
