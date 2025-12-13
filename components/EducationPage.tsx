@@ -80,11 +80,11 @@ const EducationPage: React.FC = () => {
           <div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">O Que Evitar</h3>
             <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-              <li>❌ Mentir sobre experiências ou habilidades</li>
-              <li>❌ Usar e-mail pouco profissional (ex.: gatinha123@...)</li>
-              <li>❌ Incluir informações irrelevantes (hobbies que não agregam)</li>
-              <li>❌ Salvar em formato incompatível (sempre envie PDF)</li>
-              <li>❌ Curriculo genérico — personalize para cada vaga</li>
+              <li>Mentir sobre experiências ou habilidades</li>
+              <li>Usar e-mail pouco profissional (ex.: gatinha123@...)</li>
+              <li>Incluir informações irrelevantes (hobbies que não agregam)</li>
+              <li>Salvar em formato incompatível (sempre envie PDF)</li>
+              <li>Curriculo genérico — personalize para cada vaga</li>
             </ul>
           </div>
         </div>
@@ -124,25 +124,25 @@ const EducationPage: React.FC = () => {
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Perguntas Comuns e Como Responder</h3>
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <div>
-                <p className="font-semibold">❓ "Fale sobre você"</p>
-                <p className="ml-4">✅ Resuma sua trajetória profissional focando no que é relevante para a vaga (2-3 minutos)</p>
+                <p className="font-semibold">"Fale sobre você"</p>
+                <p className="ml-4">Resuma sua trajetória profissional focando no que é relevante para a vaga (2-3 minutos)</p>
               </div>
               <div>
-                <p className="font-semibold">❓ "Qual seu maior defeito?"</p>
-                <p className="ml-4">✅ Cite algo real, mas mostre como está trabalhando para melhorar</p>
+                <p className="font-semibold">"Qual seu maior defeito?"</p>
+                <p className="ml-4">Cite algo real, mas mostre como está trabalhando para melhorar</p>
                 <p className="ml-4 text-sm italic">Ex: "Às vezes sou perfeccionista demais, mas aprendi a priorizar prazos"</p>
               </div>
               <div>
-                <p className="font-semibold">❓ "Por que devemos contratar você?"</p>
-                <p className="ml-4">✅ Destaque suas habilidades + resultados passados + alinhamento com a vaga</p>
+                <p className="font-semibold">"Por que devemos contratar você?"</p>
+                <p className="ml-4">Destaque suas habilidades + resultados passados + alinhamento com a vaga</p>
               </div>
               <div>
-                <p className="font-semibold">❓ "Onde você se vê daqui a 5 anos?"</p>
-                <p className="ml-4">✅ Mostre ambição alinhada com crescimento na empresa</p>
+                <p className="font-semibold">"Onde você se vê daqui a 5 anos?"</p>
+                <p className="ml-4">Mostre ambição alinhada com crescimento na empresa</p>
               </div>
               <div>
-                <p className="font-semibold">❓ "Pretensão salarial?"</p>
-                <p className="ml-4">✅ Pesquise o mercado antes. Diga uma faixa ou "Estou aberto a propostas compatíveis com o mercado"</p>
+                <p className="font-semibold">"Pretensão salarial?"</p>
+                <p className="ml-4">Pesquise o mercado antes. Diga uma faixa ou "Estou aberto a propostas compatíveis com o mercado"</p>
               </div>
             </div>
           </div>
@@ -158,7 +158,7 @@ const EducationPage: React.FC = () => {
           </div>
 
           <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">💡 Dica Extra: Entrevistas Online</h3>
+            <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">Dica Extra: Entrevistas Online</h3>
             <ul className="list-disc list-inside space-y-1 text-sm text-blue-700 dark:text-blue-300">
               <li>Teste câmera, microfone e conexão antes</li>
               <li>Escolha um local iluminado e sem ruídos</li>
@@ -172,7 +172,7 @@ const EducationPage: React.FC = () => {
 
       {/* Recursos Adicionais */}
       <section className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 shadow-lg rounded-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">📚 Recursos Gratuitos Recomendados</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Recursos Gratuitos Recomendados</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700 dark:text-gray-300">
           <div>
             <h4 className="font-semibold mb-2">Educação Financeira:</h4>
