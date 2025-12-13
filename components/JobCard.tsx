@@ -4,7 +4,6 @@ import { Job } from '../types';
 import { MapPinIcon } from './icons/MapPinIcon';
 import { ClockIcon } from './icons/ClockIcon';
 import { BuildingOfficeIcon } from './icons/BuildingOfficeIcon';
-import { ArrowRightIcon } from './icons/ArrowRightIcon';
 import { HeartIcon } from './icons/HeartIcon';
 
 interface JobCardProps {
@@ -72,7 +71,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onJobClick, isFavorite = false, 
                 <span>{timeSince(job.postedDate)}</span>
             </div>
              <div className="flex items-center text-blue-600 dark:text-blue-400 font-semibold">
-                Ver Detalhes <ArrowRightIcon className="h-4 w-4 ml-1" />
+                Ver Detalhes
              </div>
         </div>
     </div>

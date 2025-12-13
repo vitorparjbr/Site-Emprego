@@ -1,7 +1,6 @@
 
 import React, { useContext } from 'react';
 import { AppContext } from '../App';
-import { ArrowRightIcon } from './icons/ArrowRightIcon';
 
 const NewsPage: React.FC = () => {
     // Acessa os dados do contexto global
@@ -31,7 +30,6 @@ const NewsPage: React.FC = () => {
                             className="inline-flex items-center font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                         >
                             Ler mais em {article.source}
-                            <ArrowRightIcon className="h-4 w-4 ml-2" />
                         </a>
                     </div>
                 ))}
