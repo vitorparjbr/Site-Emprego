@@ -12,6 +12,7 @@ import EmployerPage from './components/EmployerPage';
 import NewsPage from './components/NewsPage';
 import AboutPage from './components/AboutPage';
 import FeedbackPage from './components/FeedbackPage';
+import EducationPage from './components/EducationPage';
 import * as fb from './services/firebaseService';
 
 // Criação do Contexto da Aplicação (AppContext)
@@ -311,6 +312,8 @@ const App: React.FC = () => {
         return <AboutPage />;
       case 'feedback':
         return <FeedbackPage />;
+      case 'education':
+        return <EducationPage />;
       default:
         return <HomePage />;
     }
