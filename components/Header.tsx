@@ -116,6 +116,7 @@ const Header: React.FC = () => {
              <button onClick={() => handleNavClick('employer')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Publicar Vagas</button>
              <button onClick={() => handleNavClick('news')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Notícias</button>
              <button onClick={() => handleNavClick('about')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Quem Somos</button>
+             <button onClick={() => handleNavClick('feedback')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Comentários</button>
           </div>
         </div>
       )}
