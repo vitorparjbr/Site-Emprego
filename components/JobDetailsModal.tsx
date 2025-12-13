@@ -169,7 +169,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
               {/* Requisitos da vaga */}
               <div>
                 <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Requisitos</h3>
-                <div className="pl-4 border-l-2 border-blue-500 space-y-2">
+                <div className="pl-4 space-y-2">
                     <DetailItem label="Escolaridade" value={job.requirements.education} />
                     <DetailItem label="Experiência" value={job.requirements.experience} />
                     <DetailItem label="Perfil Profissional" value={job.requirements.profile} />

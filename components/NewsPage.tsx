@@ -16,7 +16,7 @@ const NewsPage: React.FC = () => {
             <div className="space-y-6">
                 {/* Mapeia o array de notícias e renderiza um card para cada uma */}
                 {newsContent.map((article, index) => (
-                    <div key={index} className="p-4 border-l-4 border-blue-500 bg-gray-50 dark:bg-gray-700 rounded-r-lg">
+                    <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <h2 className="text-xl font-semibold mb-2">{article.title}</h2>
                         <p className="text-gray-700 dark:text-gray-300 mb-3">{article.description}</p>
                         {/* 
