@@ -1,5 +1,5 @@
 
-export type Page = 'home' | 'employer' | 'news' | 'about' | 'feedback' | 'education';
+export type Page = 'home' | 'employer' | 'about';
 
 export type JobType = 'emprego' | 'estagio' | 'jovem-aprendiz' | 'curso';
 
@@ -50,10 +50,3 @@ export interface Employer {
   password?: string; // Should be hashed in a real app
 }
 
-// Novo tipo para estruturar as notícias
-export interface NewsArticle {
-  title: string;
-  description: string;
-  link: string;
-  source: string;
-}

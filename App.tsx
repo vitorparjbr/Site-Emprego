@@ -1,18 +1,15 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-// Importa os tipos de dados usados na aplicação (Page, Job, Employer, Application, NewsArticle)
-import { Page, Job, Employer, Application, NewsArticle } from './types';
+// Importa os tipos de dados usados na aplicação (Page, Job, Employer, Application)
+import { Page, Job, Employer, Application } from './types';
 // Importa os dados mocados (simulados) para o funcionamento inicial da aplicação
-import { MOCK_JOBS, MOCK_EMPLOYERS, MOCK_NEWS, MOCK_ABOUT_US } from './constants';
+import { MOCK_JOBS, MOCK_EMPLOYERS, MOCK_ABOUT_US } from './constants';
 // Importa os componentes principais da interface
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './components/HomePage';
 import EmployerPage from './components/EmployerPage';
-import NewsPage from './components/NewsPage';
 import AboutPage from './components/AboutPage';
-import FeedbackPage from './components/FeedbackPage';
-import EducationPage from './components/EducationPage';
 import * as fb from './services/firebaseService';
 
 // Criação do Contexto da Aplicação (AppContext)
@@ -22,7 +19,6 @@ export const AppContext = React.createContext<{
   jobs: Job[];
   employers: Employer[];
   loggedInEmployer: Employer | null;
-  newsContent: NewsArticle[]; 
   aboutContent: string;
   setPage: (page: Page) => void;
   login: (email: string, pass: string) => Promise<boolean>;
@@ -306,14 +302,8 @@ const App: React.FC = () => {
         return <HomePage />;
       case 'employer':
         return <EmployerPage />;
-      case 'news':
-        return <NewsPage />;
       case 'about':
         return <AboutPage />;
-      case 'feedback':
-        return <FeedbackPage />;
-      case 'education':
-        return <EducationPage />;
       default:
         return <HomePage />;
     }
@@ -325,7 +315,6 @@ const App: React.FC = () => {
     jobs,
     employers,
     loggedInEmployer,
-    newsContent: MOCK_NEWS,
     aboutContent: MOCK_ABOUT_US,
     setPage,
     login,

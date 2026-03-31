@@ -1,5 +1,5 @@
 
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { AppContext } from '../App';
 import { Page } from '../types';
 import { BriefcaseIcon } from './icons/BriefcaseIcon';
@@ -7,8 +7,6 @@ import { XMarkIcon } from './icons/XMarkIcon';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const context = useContext(AppContext);
 
   if (!context) return null;
@@ -18,20 +16,7 @@ const Header: React.FC = () => {
   const handleNavClick = (page: Page) => {
     setPage(page);
     setIsMenuOpen(false);
-    setIsDropdownOpen(false);
   };
-
-  // Fechar dropdown ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
   
   const NavLink: React.FC<{ page: Page, children: React.ReactNode }> = ({ page, children }) => (
     <button
@@ -57,44 +42,7 @@ const Header: React.FC = () => {
               <NavLink page="home">Início</NavLink>
               <NavLink page="employer">Publicar Vagas</NavLink>
               
-              {/* Dropdown Menu */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Mais
-                </button>
-                
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-600 animate-in fade-in-0 zoom-in-95 origin-top-right">
-                    <button
-                      onClick={() => handleNavClick('news')}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 first:rounded-t-md transition-colors"
-                    >
-                      Notícias
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('about')}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      Quem Somos
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('feedback')}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      Comentários
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('education')}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-600 last:rounded-b-md transition-colors"
-                    >
-                      Educação
-                    </button>
-                  </div>
-                )}
-              </div>
+              <NavLink page="about">Quem Somos</NavLink>
             </div>
           </div>
           <div className="-mr-2 flex md:hidden">
@@ -120,10 +68,7 @@ const Header: React.FC = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
              <button onClick={() => handleNavClick('home')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Início</button>
              <button onClick={() => handleNavClick('employer')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Publicar Vagas</button>
-             <button onClick={() => handleNavClick('news')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Notícias</button>
              <button onClick={() => handleNavClick('about')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Quem Somos</button>
-             <button onClick={() => handleNavClick('feedback')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Comentários</button>
-             <button onClick={() => handleNavClick('education')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Educação</button>
           </div>
         </div>
       )}

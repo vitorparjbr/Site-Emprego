@@ -1,5 +1,5 @@
 
-import { Job, Employer, NewsArticle } from './types';
+import { Job, Employer } from './types';
 
 export const MOCK_JOBS: Job[] = [
   {
@@ -95,35 +95,6 @@ export const MOCK_EMPLOYERS: Employer[] = [
         password: 'password123'
     }
 ];
-
-// MOCK_NEWS foi reestruturado para ser um array de objetos, permitindo links e melhor manipulação dos dados.
-export const MOCK_NEWS: NewsArticle[] = [
-  {
-    title: "Cursos Gratuitos de Tecnologia Abrem Inscrições",
-    description: "A plataforma 'Futuro Digital' anunciou a abertura de 5.000 vagas para cursos online gratuitos nas áreas de programação, análise de dados e inteligência artificial. As inscrições vão até o final do mês e são abertas para todo o Brasil.",
-    link: "https://example.com/cursos-tecnologia",
-    source: "Futuro Digital News"
-  },
-  {
-    title: "Concurso Nacional Anuncia Edital com Salários de até R$ 15 mil",
-    description: "Foi publicado o edital para o concurso do Tribunal de Contas Nacional, com vagas para níveis médio e superior em diversas áreas. As provas estão previstas para novembro e as inscrições começam na próxima semana.",
-    link: "https://example.com/concurso-nacional",
-    source: "Diário Oficial"
-  },
-  {
-    title: "Programa de Bolsas de Estudo para Universidades no Exterior",
-    description: "O programa 'Mundo afora' está com inscrições abertas para bolsas de estudo integrais para cursos de graduação e pós-graduação em universidades na Europa e América do Norte. O prazo final para candidatura é 30 de setembro.",
-    link: "https://example.com/bolsas-exterior",
-    source: "Educação Internacional"
-  },
-  {
-    title: "Vestibulares de Inverno: Fique Atento aos Prazos",
-    description: "As principais universidades estaduais e federais divulgaram os calendários de seus vestibulares de inverno. Candidatos devem ficar atentos aos prazos de isenção de taxa e inscrição para não perderem a oportunidade.",
-    link: "https://example.com/vestibulares-inverno",
-    source: "Guia do Estudante"
-  }
-];
-
 
 export const MOCK_ABOUT_US = `
 <h2 class="text-2xl font-bold mb-4 text-blue-500 dark:text-blue-400">Quem Somos</h2>
