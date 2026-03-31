@@ -70,6 +70,7 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
     const [experience, setExperience] = useState('');
     const [profile, setProfile] = useState('');
     const [description, setDescription] = useState('');
+    const [aboutCompany, setAboutCompany] = useState('');
     const [courseContact, setCourseContact] = useState('');
     const [resumePreference, setResumePreference] = useState<'file' | 'text' | 'both' | 'none'>('file');
 
@@ -91,6 +92,7 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
         setExperience('');
         setProfile('');
         setDescription('');
+        setAboutCompany('');
         setCourseContact('');
         setResumePreference('file');
     };
@@ -112,6 +114,7 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
             setExperience(jobToEdit.requirements.experience || '');
             setProfile(jobToEdit.requirements.profile || '');
             setDescription(jobToEdit.description || '');
+            setAboutCompany(jobToEdit.aboutCompany || '');
             setCourseContact(jobToEdit.courseContact || '');
             setResumePreference(jobToEdit.resumePreference || 'file');
         } else {
@@ -150,6 +153,7 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
                 profile: profile || undefined,
             },
             description: description || undefined,
+            aboutCompany: aboutCompany || undefined,
             courseContact: courseContact || undefined,
             resumePreference
         };
@@ -365,13 +369,22 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
 
             {/* Descrição da Vaga - apenas para Emprego */}
             {jobType === 'emprego' && (
-                <TextAreaField 
-                    label="Descrição da Vaga" 
-                    value={description} 
-                    onChange={setDescription}
-                    placeholder="Descreva sobre a empresa (localização, atividade, tempo de existência), o que o candidato irá fazer, responsabilidades do cargo, etc."
-                    rows={4}
-                />
+                <>
+                    <TextAreaField 
+                        label="Descrição da Vaga" 
+                        value={description} 
+                        onChange={setDescription}
+                        placeholder="Descreva o que o candidato irá fazer, atribuições e responsabilidades do cargo."
+                        rows={4}
+                    />
+                    <TextAreaField 
+                        label="Sobre a Empresa" 
+                        value={aboutCompany} 
+                        onChange={setAboutCompany}
+                        placeholder="Fale sobre a empresa: o que faz, ramo de atividade, tempo de existência, o que valoriza, diferenciais, etc."
+                        rows={4}
+                    />
+                </>
             )}
 
             {/* Contato do Curso - apenas para Curso */}

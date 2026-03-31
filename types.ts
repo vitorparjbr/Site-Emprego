@@ -36,7 +36,8 @@ export interface Job {
     experience?: string;
     profile?: string;
   };
-  description?: string; // Descrição da Vaga
+  description?: string; // Atribuições e responsabilidades do cargo
+  aboutCompany?: string; // Sobre a empresa
   courseContact?: string; // Contato do curso (link, telefone, e-mail)
   postedDate: string;
   applications: Application[];

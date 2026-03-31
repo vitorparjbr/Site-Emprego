@@ -203,6 +203,14 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
                 </div>
               )}
 
+              {/* Sobre a Empresa (se houver) */}
+              {job.aboutCompany && (
+                <div>
+                  <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Sobre a Empresa</h3>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{job.aboutCompany}</p>
+                </div>
+              )}
+
               {/* Contato do Curso (se for curso) */}
               {job.courseContact && (
                 <div>
