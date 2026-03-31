@@ -3,44 +3,33 @@ import React, { useContext, useState, useMemo, useEffect } from 'react';
 import { AppContext } from '../App';
 import { Job, Application } from '../types';
 import PostJobForm from './PostJobForm';
-import { UserIcon } from './icons/UserIcon';
-import { LockClosedIcon } from './icons/LockClosedIcon';
-import { BuildingOfficeIcon } from './icons/BuildingOfficeIcon';
 import { PencilIcon } from './icons/PencilIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
+import { BuildingOfficeIcon } from './icons/BuildingOfficeIcon';
 import * as fb from '../services/firebaseService';
 
 const EmployerPage: React.FC = () => {
   const context = useContext(AppContext);
   
-  // --- ESTADOS LOCAIS DO COMPONENTE ---
-  const [isLoginView, setIsLoginView] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [error, setError] = useState('');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedJobApplications, setSelectedJobApplications] = useState<Application[]>([]);
-  // NOVO: Estado para controlar qual vaga está em modo de edição.
-  // Se for null, o formulário é para criar uma nova vaga.
-  // Se contiver uma vaga, o formulário é para editar essa vaga.
   const [editingJob, setEditingJob] = useState<Job | null>(null);
-  // Estado para armazenar contagem de aplicações por job ID
   const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
+  const [companyNameInput, setCompanyNameInput] = useState('');
+  const [isEditingName, setIsEditingName] = useState(false);
 
   if (!context) return <div>Carregando...</div>;
 
-  const { loggedInEmployer, login, logout, register, jobs, deleteJob, setPage } = context;
+  const { loggedInEmployer, updateEmployerName, jobs, deleteJob } = context;
 
-  // Memoiza a lista de vagas do empregador logado para otimização
+  // Memoiza a lista de vagas do empregador para otimização
   const employerJobs = useMemo(() => {
-    if (!loggedInEmployer) return [];
     return jobs.filter(job => job.employerId === loggedInEmployer.id);
   }, [jobs, loggedInEmployer]);
 
   // Carrega contagem de aplicações para cada vaga do empregador quando Firebase está habilitado
   useEffect(() => {
-    if (!fb.isEnabled() || !loggedInEmployer) return;
+    if (!fb.isEnabled()) return;
     
     const loadApplicationCounts = async () => {
       const counts: Record<string, number> = {};
@@ -58,86 +47,7 @@ const EmployerPage: React.FC = () => {
     loadApplicationCounts();
   }, [employerJobs, loggedInEmployer]);
 
-  // Função para tratar o submit do formulário de login
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const ok = await login(email, password);
-    if (!ok) {
-      setError('E-mail ou senha inválidos.');
-    } else {
-      setError('');
-    }
-  };
-  
-  // Função para tratar o submit do formulário de registro
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const ok = await register(companyName, email, password);
-    if (!ok) {
-      setError('Este e-mail já está em uso.');
-    } else {
-      setError('');
-    }
-  };
-
-  // --- RENDERIZAÇÃO CONDICIONAL ---
-
-  // 1. Se não há empregador logado, exibe o formulário de login/cadastro
-  if (!loggedInEmployer) {
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-          <div className="flex justify-center mb-6">
-            <button onClick={() => setIsLoginView(true)} className={`px-4 py-2 font-semibold ${isLoginView ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>Login</button>
-            <button onClick={() => setIsLoginView(false)} className={`px-4 py-2 font-semibold ${!isLoginView ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}>Cadastro</button>
-          </div>
-          <form onSubmit={isLoginView ? handleLogin : handleRegister} className="space-y-6">
-            <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">{isLoginView ? 'Acesso do Empregador' : 'Cadastre sua Empresa'}</h2>
-            {!isLoginView && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome da Empresa</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                       <BuildingOfficeIcon className="h-5 w-5 text-gray-400" />
-                   </div>
-                   <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} required className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
-                </div>
-              </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">E-mail</label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                       <UserIcon className="h-5 w-5 text-gray-400" />
-                   </div>
-                   <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha</label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                       <LockClosedIcon className="h-5 w-5 text-gray-400" />
-                   </div>
-                   <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600" />
-              </div>
-            </div>
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-            <div className="flex gap-3">
-              <button type="submit" className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                {isLoginView ? 'Entrar' : 'Cadastrar'}
-              </button>
-              <button type="button" onClick={() => setPage('home')} className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500">
-                Cancelar
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // 2. Se uma vaga foi selecionada, exibe a lista de candidatos para essa vaga
+  // Função para salvar o nome da empresa
   const handleViewCandidates = async (job: Job) => {
     setSelectedJob(job);
     // fetch applications from Firestore if enabled
@@ -184,14 +94,48 @@ const EmployerPage: React.FC = () => {
     );
   }
 
-  // 3. Se o empregador está logado e nenhuma vaga específica foi selecionada, exibe o painel principal
+  // 3. Painel principal
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-3">
         <h1 className="text-3xl font-bold">Painel do Empregador</h1>
-        <button onClick={logout} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">Sair</button>
       </div>
-      <p className="text-xl">Bem-vindo(a), {loggedInEmployer.companyName}!</p>
+
+      {/* Nome da empresa */}
+      {isEditingName ? (
+        <form onSubmit={handleSaveName} className="flex items-center gap-2 max-w-sm">
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <BuildingOfficeIcon className="h-4 w-4 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={companyNameInput}
+              onChange={e => setCompanyNameInput(e.target.value)}
+              placeholder="Nome da sua empresa"
+              autoFocus
+              className="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 text-sm"
+            />
+          </div>
+          <button type="submit" className="px-3 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700">Salvar</button>
+          <button type="button" onClick={() => setIsEditingName(false)} className="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500">Cancelar</button>
+        </form>
+      ) : (
+        <div className="flex items-center gap-2">
+          {loggedInEmployer.companyName ? (
+            <p className="text-xl">Bem-vindo(a), <strong>{loggedInEmployer.companyName}</strong>!</p>
+          ) : (
+            <p className="text-xl text-gray-500 dark:text-gray-400">Defina o nome da sua empresa para exibi-lo nas vagas.</p>
+          )}
+          <button
+            onClick={() => { setCompanyNameInput(loggedInEmployer.companyName || ''); setIsEditingName(true); }}
+            className="p-1 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400"
+            title="Editar nome da empresa"
+          >
+            <PencilIcon className="h-4 w-4" />
+          </button>
+        </div>
+      )}
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Coluna para publicar OU EDITAR uma vaga */}
