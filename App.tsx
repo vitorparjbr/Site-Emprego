@@ -78,17 +78,8 @@ const App: React.FC = () => {
           }
         }
         return {
-          id: j.id,
-          employerId: j.employerId,
-          title: j.title,
-          companyName: j.companyName,
-          location: j.location,
-          salary: j.salary,
-          benefits: j.benefits,
-          workHours: j.workHours,
-          workSchedule: j.workSchedule,
-          workScale: j.workScale,
-          requirements: j.requirements || { },
+          ...j,
+          requirements: j.requirements || {},
           postedDate,
           applications: j.applications || [],
           resumePreference: j.resumePreference || 'file'
