@@ -173,6 +173,22 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
                 </div>
               )}
 
+              {/* Sobre a Empresa (se houver) */}
+              {job.aboutCompany && (
+                <div>
+                  <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Sobre a Empresa</h3>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.aboutCompany}</p>
+                </div>
+              )}
+
+              {/* Descrição da Vaga (se houver) */}
+              {job.description && (
+                <div>
+                  <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Descrição da Vaga</h3>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.description}</p>
+                </div>
+              )}
+
               {/* Detalhes principais da vaga */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <DetailItem label="Área/Setor" value={job.area} />
@@ -194,22 +210,6 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
                     <DetailItem label="Perfil Profissional" value={job.requirements.profile} />
                 </div>
               </div>
-
-              {/* Descrição da Vaga (se houver) */}
-              {job.description && (
-                <div>
-                  <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Descrição da Vaga</h3>
-                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.description}</p>
-                </div>
-              )}
-
-              {/* Sobre a Empresa (se houver) */}
-              {job.aboutCompany && (
-                <div>
-                  <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Sobre a Empresa</h3>
-                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.aboutCompany}</p>
-                </div>
-              )}
 
               {/* Contato do Curso (se for curso) */}
               {job.courseContact && (
