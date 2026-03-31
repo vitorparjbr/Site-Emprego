@@ -21,7 +21,8 @@ import {
   serverTimestamp,
   getDocs,
   arrayUnion,
-  getDoc
+  getDoc,
+  deleteField
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -130,13 +131,30 @@ export const addJob = async (job: any, employerId: string) => {
 
 export const updateJob = async (id: string, jobData: any) => {
   if (!enabled || !db) throw new Error('Firebase not configured');
-  const cleaned = cleanData(jobData);
-  const dataToUpdate = {
-    ...cleaned,
+
+  // Campos opcionais de topo: se undefined/null, usar deleteField() para removê-los do Firestore
+  const OPTIONAL_TOP = ['companyName', 'area', 'duration', 'salary', 'benefits', 'workHours', 'workSchedule', 'workScale', 'description', 'aboutCompany', 'courseContact'];
+  // Campos opcionais dentro de requirements: usar notação de ponto
+  const OPTIONAL_REQ = ['education', 'experience', 'profile'];
+
+  const dataToUpdate: any = {
+    jobType: jobData.jobType,
+    title: jobData.title,
+    location: jobData.location,
+    resumePreference: jobData.resumePreference,
     updatedAt: serverTimestamp(),
   };
-  const ref = doc(db, 'jobs', id);
-  await updateDoc(ref, dataToUpdate);
+
+  for (const field of OPTIONAL_TOP) {
+    dataToUpdate[field] = jobData[field] !== undefined ? jobData[field] : deleteField();
+  }
+
+  const req = jobData.requirements || {};
+  for (const field of OPTIONAL_REQ) {
+    dataToUpdate[`requirements.${field}`] = req[field] !== undefined ? req[field] : deleteField();
+  }
+
+  await updateDoc(doc(db, 'jobs', id), dataToUpdate);
 };
 
 export const deleteJob = async (id: string) => {
