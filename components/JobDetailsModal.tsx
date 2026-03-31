@@ -17,9 +17,9 @@ interface JobDetailsModalProps {
 const DetailItem: React.FC<{ label: string; value?: string }> = ({ label, value }) => {
     if (!value) return null;
     return (
-        <div>
+        <div className="min-w-0">
             <h4 className="font-semibold text-gray-700 dark:text-gray-300">{label}</h4>
-            <p className="text-gray-600 dark:text-gray-400">{value}</p>
+            <p className="text-gray-600 dark:text-gray-400 break-words">{value}</p>
         </div>
     );
 };
@@ -175,7 +175,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
 
               {/* Sobre a Empresa (se houver) */}
               {job.aboutCompany && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Sobre a Empresa</h3>
                   <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.aboutCompany}</p>
                 </div>
@@ -183,14 +183,14 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
 
               {/* Descrição da Vaga (se houver) */}
               {job.description && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Descrição da Vaga</h3>
                   <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.description}</p>
                 </div>
               )}
 
               {/* Detalhes principais da vaga */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                 <DetailItem label="Área/Setor" value={job.area} />
                 <DetailItem label="Duração" value={job.duration} />
                 <DetailItem label="Salário" value={job.salary} />
@@ -202,9 +202,9 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
               </div>
 
               {/* Requisitos da vaga */}
-              <div>
+              <div className="min-w-0">
                 <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Requisitos</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                     <DetailItem label="Escolaridade" value={job.requirements.education} />
                     <DetailItem label="Experiência" value={job.requirements.experience} />
                     <DetailItem label="Perfil Profissional" value={job.requirements.profile} />
@@ -213,7 +213,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
 
               {/* Contato do Curso (se for curso) */}
               {job.courseContact && (
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Contato para Inscrição</h3>
                   <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.courseContact}</p>
                 </div>
