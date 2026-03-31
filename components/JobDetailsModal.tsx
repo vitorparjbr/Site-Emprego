@@ -196,8 +196,8 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
                 <DetailItem label="Salário" value={job.salary} />
                 <DetailItem label="Benefícios" value={job.benefits} />
                 <DetailItem label="Carga Horária" value={job.workHours} />
-                <DetailItem label="Jornada" value={job.workSchedule} />
-                <DetailItem label="Escala de Trabalho" value={job.workScale} />
+                <DetailItem label="Horário" value={job.workSchedule} />
+                <DetailItem label="Modalidade" value={job.workScale} />
                 <DetailItem label="Data de Publicação" value={new Date(job.postedDate).toLocaleDateString('pt-BR')} />
               </div>
 
