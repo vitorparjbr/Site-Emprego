@@ -48,6 +48,14 @@ const EmployerPage: React.FC = () => {
   }, [employerJobs, loggedInEmployer]);
 
   // Função para salvar o nome da empresa
+  const handleSaveName = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (companyNameInput.trim()) {
+      updateEmployerName(companyNameInput.trim());
+    }
+    setIsEditingName(false);
+  };
+
   const handleViewCandidates = async (job: Job) => {
     setSelectedJob(job);
     // fetch applications from Firestore if enabled

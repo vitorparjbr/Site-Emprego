@@ -46,7 +46,7 @@ export interface Job {
 export interface Employer {
   id: string;
   companyName: string;
-  email: string;
-  password?: string; // Should be hashed in a real app
+  email?: string;
+  password?: string;
 }
 
