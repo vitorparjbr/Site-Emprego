@@ -121,12 +121,12 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
     // Overlay de fundo
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       {/* Container do Modal */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col min-w-0 overflow-hidden">
         {/* Cabeçalho do Modal */}
-        <div className="p-6 flex justify-between items-center border-b dark:border-gray-700">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{job.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400">{job.companyName || 'Confidencial'} - {job.location}</p>
+        <div className="p-6 flex justify-between items-center gap-3 border-b dark:border-gray-700">
+          <div className="min-w-0">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white break-words">{job.title}</h2>
+            <p className="text-gray-600 dark:text-gray-400 break-words">{job.companyName || 'Confidencial'} - {job.location}</p>
           </div>
           <div className="flex items-center gap-2">
             {/* Botão de favoritar */}
@@ -151,7 +151,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
         </div>
 
         {/* Corpo do Modal (com scroll) */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        <div className="p-6 overflow-y-auto overflow-x-hidden space-y-6 min-w-0">
           {/* Renderização condicional: ou exibe o formulário, ou os detalhes da vaga */}
           {showApplicationForm ? (
             <ApplicationForm job={job} onCancel={() => setShowApplicationForm(false)} onSuccess={handleApplySuccess} />
@@ -199,7 +199,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
               {job.description && (
                 <div>
                   <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Descrição da Vaga</h3>
-                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{job.description}</p>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.description}</p>
                 </div>
               )}
 
@@ -207,7 +207,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
               {job.aboutCompany && (
                 <div>
                   <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Sobre a Empresa</h3>
-                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{job.aboutCompany}</p>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.aboutCompany}</p>
                 </div>
               )}
 
@@ -215,7 +215,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
               {job.courseContact && (
                 <div>
                   <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-200">Contato para Inscrição</h3>
-                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{job.courseContact}</p>
+                  <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words">{job.courseContact}</p>
                 </div>
               )}
             </>
