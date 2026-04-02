@@ -1,5 +1,18 @@
-$apiKey = 'AIzaSyCke9Nk3UncQP9XetppwTIhb5UaN-tDMgY'
-$projectId = 'site-de-emprego-8d79f'
+# Read Firebase config from .env.local (never hardcode API keys)
+$envFile = Join-Path $PSScriptRoot '..\.env.local'
+if (-not (Test-Path $envFile)) {
+  Write-Output "[ERROR] .env.local not found at $envFile. Create it with VITE_FIREBASE_API_KEY and VITE_FIREBASE_PROJECT_ID."
+  exit 1
+}
+$envLines = Get-Content $envFile
+$apiKey = ($envLines | Where-Object { $_ -match '^VITE_FIREBASE_API_KEY=' }) -replace '^VITE_FIREBASE_API_KEY=',''
+$projectId = ($envLines | Where-Object { $_ -match '^VITE_FIREBASE_PROJECT_ID=' }) -replace '^VITE_FIREBASE_PROJECT_ID=',''
+
+if (-not $apiKey -or -not $projectId) {
+  Write-Output "[ERROR] VITE_FIREBASE_API_KEY or VITE_FIREBASE_PROJECT_ID not found in .env.local"
+  exit 1
+}
+
 $rand = Get-Random
 $email = "copilot.test+$rand@example.com"
 $password = "TestPass123!"
