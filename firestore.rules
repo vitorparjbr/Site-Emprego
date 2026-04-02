@@ -2,24 +2,33 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Jobs: leitura pública, escrita pública (site sem autenticação)
+    // Jobs: leitura pública, escrita apenas para empregadores autenticados
     match /jobs/{jobId} {
       allow read: if true;
-      allow create: if request.resource.data.employerId is string
-                    && request.resource.data.employerId.size() > 0;
-      allow update, delete: if resource.data.employerId == request.resource.data.employerId
-                            || request.resource.data == null;
+      allow create: if request.auth != null
+                    && request.resource.data.employerId == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.employerId == request.auth.uid;
+      allow delete: if request.auth != null
+                    && resource.data.employerId == request.auth.uid;
     }
 
-    // Subcoleção de candidaturas: qualquer pessoa pode criar e ler
+    // Subcoleção de candidaturas: qualquer pessoa pode criar, leitura apenas para o empregador dono da vaga
     match /jobs/{jobId}/applications/{appId} {
-      allow read, create: if true;
+      allow create: if true;
+      allow read: if request.auth != null
+                  && get(/databases/$(database)/documents/jobs/$(jobId)).data.employerId == request.auth.uid;
       allow update, delete: if false;
     }
 
-    // Documentos de empregadores: leitura e escrita públicas (sem auth)
+    // Empregadores: leitura pública, criação/atualização apenas pelo próprio usuário autenticado
     match /employers/{userId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.auth.uid == userId;
+      allow update: if request.auth != null
+                    && request.auth.uid == userId;
+      allow delete: if false;
     }
 
   }
