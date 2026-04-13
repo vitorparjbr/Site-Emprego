@@ -4,6 +4,7 @@ import { Job } from '../types';
 import ApplicationForm from './ApplicationForm';
 import { XMarkIcon } from './icons/XMarkIcon';
 import { HeartIcon } from './icons/HeartIcon';
+import { toast } from 'react-hot-toast';
 
 interface JobDetailsModalProps {
   job: Job;
@@ -114,7 +115,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, onClose, isFavor
   const handleApplySuccess = () => {
     setShowApplicationForm(false); // Esconde o formulário
     onClose(); // Fecha o modal
-    // Em uma aplicação real, aqui poderia ser exibida uma mensagem de sucesso (toast)
+    toast.success('Candidatura enviada com sucesso!');
   };
 
   return (
