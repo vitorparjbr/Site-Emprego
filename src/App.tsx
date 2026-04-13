@@ -11,6 +11,7 @@ import HomePage from './components/HomePage';
 import EmployerPage from './components/EmployerPage';
 import AboutPage from './components/AboutPage';
 import * as fb from './services/firebaseService';
+import { Toaster, toast } from 'react-hot-toast';
 
 // Criação do Contexto da Aplicação (AppContext)
 // O Contexto permite compartilhar o estado e as funções globalmente entre os componentes,
@@ -104,7 +105,7 @@ const App: React.FC = () => {
     if (fb.isEnabled()) {
       // Envia para Firestore; o listener sincronizará o estado local
       fb.addJob(jobData, loggedInEmployer.id).catch((err) => {
-        try { window.alert('Falha ao publicar a vaga: ' + (err?.message || String(err))); } catch (e) {}
+        try { toast.error('Falha ao publicar a vaga: ' + (err?.message || String(err))); } catch (e) {}
       });
       return;
     }
@@ -219,6 +220,7 @@ const App: React.FC = () => {
   return (
     <AppContext.Provider value={contextValue}>
       <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+        <Toaster position="top-right" />
         <Header />
         <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {renderPage()}

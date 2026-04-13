@@ -96,7 +96,11 @@ const HomePage: React.FC = () => {
         {/* Filtro de favoritas */}
         <div className="flex items-center justify-center gap-2">
           <button
-            onClick={() => setShowOnlyFavorites(false)}
+            onClick={() => {
+              setShowOnlyFavorites(false);
+              setSearchTerm('');
+              setLocationFilter('');
+            }}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               !showOnlyFavorites
                 ? 'bg-blue-600 text-white'

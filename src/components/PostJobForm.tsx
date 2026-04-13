@@ -2,6 +2,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../App';
 import { Job, JobType } from '../types';
+import { toast } from 'react-hot-toast';
 
 // Componente InputField reutilizável
 const InputField: React.FC<{
@@ -160,8 +161,10 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
         
         if (isEditing) {
             context.updateJob(jobToEdit.id, jobData);
+            toast.success('Vaga atualizada com sucesso!');
         } else {
             context.addJob(jobData);
+            toast.success('Vaga publicada com sucesso!');
         }
         
         resetForm();
