@@ -18,7 +18,7 @@ import { Toaster, toast } from 'react-hot-toast';
 // evitando a necessidade de passar props manualmente através de múltiplos níveis (prop drilling).
 export const AppContext = React.createContext<{
   jobs: Job[];
-  loggedInEmployer: Employer;
+  loggedInEmployer: Employer | null;
   aboutContent: string;
   setPage: (page: Page) => void;
   updateEmployerName: (name: string) => void;
@@ -42,7 +42,8 @@ const App: React.FC = () => {
     }
   }); // Estado para a lista de vagas (carregado do localStorage quando disponível)
 
-  const [loggedInEmployer, setLoggedInEmployer] = useState<Employer>(() => {
+  const [loggedInEmployer, setLoggedInEmployer] = useState<Employer | null>(() => {
+    if (fb.isEnabled()) return null;
     try {
       const raw = localStorage.getItem('loggedInEmployer');
       if (raw) return JSON.parse(raw) as Employer;
@@ -50,7 +51,30 @@ const App: React.FC = () => {
     const anon: Employer = { id: `emp-${Date.now()}`, companyName: '' };
     try { localStorage.setItem('loggedInEmployer', JSON.stringify(anon)); } catch (e) {}
     return anon;
-  }); // ID persistente por dispositivo/navegador (sem autenticação)
+  }); // O Firebase substituirá isso pelo Auth
+  
+  const [authInitialized, setAuthInitialized] = useState(!fb.isEnabled());
+
+  // Conecta ao observador de contas do Firebase
+  useEffect(() => {
+    if (!fb.isEnabled()) return;
+    const unsub = fb.onAuthChanged(async (user) => {
+      if (user) {
+        try {
+          const empData = await fb.getEmployer(user.uid);
+          if (empData) {
+            setLoggedInEmployer(empData as Employer);
+          } else {
+            setLoggedInEmployer({ id: user.uid, companyName: '', email: user.email || '' });
+          }
+        } catch (e) {}
+      } else {
+        setLoggedInEmployer(null);
+      }
+      setAuthInitialized(true);
+    });
+    return () => unsub();
+  }, []);
 
   // --- FUNÇÕES DE LÓGICA DE NEGÓCIO ---
   // useCallback é usado para memoizar (guardar) a definição da função,
@@ -58,7 +82,7 @@ const App: React.FC = () => {
 
   // Função para atualizar o nome da empresa do empregador
   const updateEmployerName = useCallback((name: string) => {
-    setLoggedInEmployer(prev => ({ ...prev, companyName: name }));
+    setLoggedInEmployer(prev => prev ? { ...prev, companyName: name } : null);
   }, []);
 
   // Se o Firebase estiver habilitado, sincroniza com Firestore (jobs)
@@ -102,6 +126,10 @@ const App: React.FC = () => {
 
   // Função para adicionar uma nova vaga de emprego
   const addJob = useCallback((jobData: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => {
+    if (!loggedInEmployer) {
+      toast.error('Você precisa estar logado para publicar!');
+      return;
+    }
     if (fb.isEnabled()) {
       // Envia para Firestore; o listener sincronizará o estado local
       fb.addJob(jobData, loggedInEmployer.id).catch((err) => {
@@ -189,6 +217,17 @@ const App: React.FC = () => {
 
   // Função para renderizar a página correta com base no estado 'page'
   const renderPage = () => {
+    if (!authInitialized) {
+      return (
+        <div className="flex justify-center items-center py-20">
+            <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+      );
+    }
+
     switch (page) {
       case 'home':
         return <HomePage />;

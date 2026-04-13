@@ -7,6 +7,7 @@ import { PencilIcon } from './icons/PencilIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
 import { BuildingOfficeIcon } from './icons/BuildingOfficeIcon';
 import * as fb from '../services/firebaseService';
+import { EmployerAuth } from './EmployerAuth';
 
 const EmployerPage: React.FC = () => {
   const context = useContext(AppContext);
@@ -102,11 +103,23 @@ const EmployerPage: React.FC = () => {
     );
   }
 
+  if (!loggedInEmployer) {
+      return <EmployerAuth />;
+  }
+
   // 3. Painel principal
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center flex-wrap gap-3">
         <h1 className="text-3xl font-bold">Painel do Empregador</h1>
+        {fb.isEnabled() && (
+          <button 
+            onClick={() => fb.signOutUser()}
+            className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-md transition-colors"
+          >
+            Sair da Conta
+          </button>
+        )}
       </div>
 
       {/* Nome da empresa */}
