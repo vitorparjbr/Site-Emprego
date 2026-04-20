@@ -5,9 +5,6 @@ import { Job } from '../types';
 import JobCard from './JobCard';
 import JobDetailsModal from './JobDetailsModal';
 
-// Chave para localStorage
-const FAVORITES_KEY = 'favoriteJobs';
-
 function highlight(text: string, query: string) {
   if (!query) return <>{text}</>;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -28,13 +25,6 @@ const HomePage: React.FC = () => {
   const [locationFilter, setLocationFilter] = useState('');
   // Estado local para a vaga selecionada (para exibir o modal de detalhes)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  // Estado para favoritos
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    const saved = localStorage.getItem(FAVORITES_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
-  // Estado para filtrar apenas favoritas
-  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   // Controle de foco dos dropdowns
   const [searchFocused, setSearchFocused] = useState(false);
   const [locationFocused, setLocationFocused] = useState(false);
@@ -43,11 +33,6 @@ const HomePage: React.FC = () => {
 
   // Acessa o contexto global da aplicação
   const context = useContext(AppContext);
-
-  // Persistir favoritos no localStorage
-  useEffect(() => {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-  }, [favorites]);
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -87,29 +72,14 @@ const HomePage: React.FC = () => {
       .slice(0, 6);
   }, [jobs, locationFilter]);
 
-  // Função para alternar favorito
-  const toggleFavorite = (jobId: string) => {
-    setFavorites(prev => 
-      prev.includes(jobId) 
-        ? prev.filter(id => id !== jobId)
-        : [...prev, jobId]
-    );
-  };
-
-  // useMemo é usado para otimizar o processo de filtragem.
-  // A lista de 'filteredJobs' só será recalculada quando 'jobs', 'searchTerm', 'locationFilter' ou filtros de favoritos mudarem.
   const filteredJobs = useMemo(() => {
     return jobs.filter(job => {
-      // Verifica se o título ou nome da empresa corresponde ao termo de busca (ignorando maiúsculas/minúsculas)
       const matchesSearchTerm = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               (job.companyName && job.companyName.toLowerCase().includes(searchTerm.toLowerCase()));
-      // Verifica se a localização corresponde ao filtro (ignorando maiúsculas/minúsculas)
       const matchesLocation = job.location.toLowerCase().includes(locationFilter.toLowerCase());
-      // Verifica se é favorita (se o filtro estiver ativo)
-      const matchesFavorites = !showOnlyFavorites || favorites.includes(job.id);
-      return matchesSearchTerm && matchesLocation && matchesFavorites;
+      return matchesSearchTerm && matchesLocation;
     });
-  }, [jobs, searchTerm, locationFilter, showOnlyFavorites, favorites]);
+  }, [jobs, searchTerm, locationFilter]);
   
   // Função para abrir o modal de detalhes da vaga
   const handleJobClick = (job: Job) => {
@@ -191,18 +161,12 @@ const HomePage: React.FC = () => {
               key={job.id} 
               job={job} 
               onJobClick={handleJobClick}
-              isFavorite={favorites.includes(job.id)}
-              onToggleFavorite={toggleFavorite}
             />
           ))
         ) : (
           // Mensagem exibida quando nenhuma vaga é encontrada
           <div className="col-span-full text-center py-10">
-            <p className="text-gray-500 dark:text-gray-400">
-              {showOnlyFavorites 
-                ? 'Você ainda não tem vagas favoritas. Clique no coração para adicionar!' 
-                : 'Nenhuma vaga encontrada. Tente ajustar seus filtros.'}
-            </p>
+            <p className="text-gray-500 dark:text-gray-400">Nenhuma vaga encontrada. Tente ajustar seus filtros.</p>
           </div>
         )}
       </div>
@@ -212,8 +176,6 @@ const HomePage: React.FC = () => {
         <JobDetailsModal 
           job={selectedJob} 
           onClose={handleCloseModal}
-          isFavorite={favorites.includes(selectedJob.id)}
-          onToggleFavorite={toggleFavorite}
         />
       )}
     </div>
