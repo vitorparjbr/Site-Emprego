@@ -30,6 +30,8 @@ export const AppContext = React.createContext<{
   deleteJob: (jobId: string) => void;
   searchModalOpen: boolean;
   setSearchModalOpen: (open: boolean) => void;
+  homeResetKey: number;
+  resetHome: () => void;
 } | null>(null);
 
 // Componente principal da aplicação
@@ -38,6 +40,8 @@ const App: React.FC = () => {
   // useState gerencia o estado interno dos componentes. Quando um estado muda, o componente re-renderiza.
   const [page, setPage] = useState<Page>('home'); // Estado para controlar a página atual
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [homeResetKey, setHomeResetKey] = useState(0);
+  const resetHome = useCallback(() => setHomeResetKey(k => k + 1), []);
   const [jobs, setJobs] = useState<Job[]>(() => {
     try {
       const raw = localStorage.getItem('jobs');
@@ -263,7 +267,9 @@ const App: React.FC = () => {
     addApplication,
     searchModalOpen,
     setSearchModalOpen,
-  }), [jobs, loggedInEmployer, updateEmployerName, addJob, updateJob, addApplication, searchModalOpen]);
+    homeResetKey,
+    resetHome,
+  }), [jobs, loggedInEmployer, updateEmployerName, addJob, updateJob, addApplication, searchModalOpen, homeResetKey, resetHome]);
 
   // O Provider do AppContext envolve a aplicação, disponibilizando o 'contextValue'
   // para todos os componentes filhos que precisarem dele.

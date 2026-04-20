@@ -11,9 +11,10 @@ const Header: React.FC = () => {
 
   if (!context) return null;
 
-  const { setPage, setSearchModalOpen } = context;
+  const { setPage, setSearchModalOpen, resetHome } = context;
 
   const handleNavClick = (page: Page) => {
+    if (page === 'home') resetHome();
     setPage(page);
     setIsMenuOpen(false);
   };

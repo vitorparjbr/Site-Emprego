@@ -35,6 +35,14 @@ const HomePage: React.FC = () => {
   // Acessa o contexto global da aplicação
   const context = useContext(AppContext);
 
+  // Limpa os filtros sempre que o usuário navegar para "Início" ou clicar no logo
+  const homeResetKey = context?.homeResetKey ?? 0;
+  useEffect(() => {
+    setSearchTerm('');
+    setLocationFilter('');
+    setSelectedJob(null);
+  }, [homeResetKey]);
+
   // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handler = (e: MouseEvent) => {
