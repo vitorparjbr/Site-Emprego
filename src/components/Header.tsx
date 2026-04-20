@@ -11,10 +11,16 @@ const Header: React.FC = () => {
 
   if (!context) return null;
 
-  const { setPage } = context;
+  const { setPage, setSearchModalOpen } = context;
 
   const handleNavClick = (page: Page) => {
     setPage(page);
+    setIsMenuOpen(false);
+  };
+
+  const handleSearchClick = () => {
+    setPage('home');
+    setSearchModalOpen(true);
     setIsMenuOpen(false);
   };
   
@@ -40,6 +46,12 @@ const Header: React.FC = () => {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               <NavLink page="home">Início</NavLink>
+              <button
+                onClick={handleSearchClick}
+                className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Buscar Vagas
+              </button>
               <NavLink page="employer">Publicar Vagas</NavLink>
               
               <NavLink page="about">Quem Somos</NavLink>
@@ -67,6 +79,7 @@ const Header: React.FC = () => {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
              <button onClick={() => handleNavClick('home')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Início</button>
+             <button onClick={handleSearchClick} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Buscar Vagas</button>
              <button onClick={() => handleNavClick('employer')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Publicar Vagas</button>
              <button onClick={() => handleNavClick('about')} className="text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left">Quem Somos</button>
           </div>
