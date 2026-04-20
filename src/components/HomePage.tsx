@@ -57,8 +57,15 @@ const HomePage: React.FC = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Exibe uma mensagem de carregamento se o contexto ainda não estiver disponível
-  if (!context) return <div>Carregando...</div>;
+  // Exibe spinner enquanto o contexto não estiver disponível
+  if (!context) return (
+    <div className="flex justify-center items-center py-20">
+      <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+  );
 
   const { jobs, searchModalOpen, setSearchModalOpen } = context;
 
@@ -204,8 +211,25 @@ const HomePage: React.FC = () => {
               onJobClick={handleJobClick}
             />
           ))
+        ) : jobs.length === 0 ? (
+          // Tela de boas-vindas quando ainda não há nenhuma vaga publicada
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-center gap-4">
+            <svg className="h-16 w-16 text-blue-200 dark:text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0H4m8-6v6m0 0l-3-3m3 3l3-3" />
+            </svg>
+            <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200">Nenhuma vaga disponível no momento</h2>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md">
+              Ainda não há vagas publicadas. Se você é uma empresa, clique em <strong>Publicar Vagas</strong> no menu e comece a encontrar os melhores talentos do Brasil!
+            </p>
+            <button
+              onClick={() => context.setPage('employer')}
+              className="mt-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+            >
+              Publicar uma vaga agora
+            </button>
+          </div>
         ) : (
-          // Mensagem exibida quando nenhuma vaga é encontrada
+          // Mensagem exibida quando a busca não retorna resultados
           <div className="col-span-full text-center py-10">
             <p className="text-gray-500 dark:text-gray-400">Nenhuma vaga encontrada. Tente ajustar seus filtros.</p>
           </div>
