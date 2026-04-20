@@ -1,5 +1,5 @@
 
-export type Page = 'home' | 'employer' | 'about';
+export type Page = 'home' | 'employer' | 'about' | 'privacy' | 'terms';
 
 export type JobType = 'emprego' | 'estagio' | 'jovem-aprendiz' | 'curso';
 

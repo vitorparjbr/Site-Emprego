@@ -10,6 +10,8 @@ import Footer from './components/Footer';
 import HomePage from './components/HomePage';
 import EmployerPage from './components/EmployerPage';
 import AboutPage from './components/AboutPage';
+import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import TermsOfUsePage from './components/TermsOfUsePage';
 import * as fb from './services/firebaseService';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -235,6 +237,10 @@ const App: React.FC = () => {
         return <EmployerPage />;
       case 'about':
         return <AboutPage />;
+      case 'privacy':
+        return <PrivacyPolicyPage />;
+      case 'terms':
+        return <TermsOfUsePage />;
       default:
         return <HomePage />;
     }
