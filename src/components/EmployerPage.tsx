@@ -25,12 +25,13 @@ const EmployerPage: React.FC = () => {
 
   // Memoiza a lista de vagas do empregador para otimização
   const employerJobs = useMemo(() => {
+    if (!loggedInEmployer) return [];
     return jobs.filter(job => job.employerId === loggedInEmployer.id);
   }, [jobs, loggedInEmployer]);
 
   // Carrega contagem de aplicações para cada vaga do empregador quando Firebase está habilitado
   useEffect(() => {
-    if (!fb.isEnabled()) return;
+    if (!fb.isEnabled() || !loggedInEmployer) return;
     
     const loadApplicationCounts = async () => {
       const counts: Record<string, number> = {};
