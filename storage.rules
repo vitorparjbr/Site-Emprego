@@ -1,0 +1,37 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ────────────────────────────────────────────────────────
+    // Currículos enviados por candidatos
+    // Caminho: curriculos/{jobId}/{fileName}
+    // ────────────────────────────────────────────────────────
+    match /curriculos/{jobId}/{fileName} {
+
+      // ESCRITA: qualquer pessoa pode fazer upload de currículo,
+      // desde que respeite as restrições abaixo.
+      allow write: if
+        // Tamanho máximo: 5 MB (5 * 1024 * 1024 bytes)
+        request.resource.size <= 5 * 1024 * 1024
+        // Apenas tipos de arquivo permitidos: PDF e imagens
+        && request.resource.contentType.matches('application/pdf')
+        || request.resource.contentType.matches('image/.*');
+
+      // LEITURA: apenas empregadores autenticados podem ler currículos.
+      // (O link de download gerado pelo getDownloadURL() já é público por tempo
+      // limitado, mas bloqueamos leitura direta via regras como camada extra.)
+      allow read: if request.auth != null;
+
+      // DELETE: ninguém pode apagar currículos pelo cliente
+      allow delete: if false;
+    }
+
+    // ────────────────────────────────────────────────────────
+    // Tudo o mais: bloqueado por padrão
+    // ────────────────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+  }
+}

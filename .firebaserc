@@ -1,1 +1,5 @@
-{}
+{
+  "projects": {
+    "default": "site-de-empregos-3e981"
+  }
+}
