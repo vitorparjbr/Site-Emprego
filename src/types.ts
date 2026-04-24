@@ -48,6 +48,6 @@ export interface Employer {
   id: string;
   companyName: string;
   email?: string;
-  password?: string;
+  // Nota: senhas NUNCA são armazenadas no cliente — o Firebase Authentication gerencia isso.
 }
 

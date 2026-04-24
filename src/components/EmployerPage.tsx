@@ -8,6 +8,7 @@ import { XMarkIcon } from './icons/XMarkIcon';
 import { BuildingOfficeIcon } from './icons/BuildingOfficeIcon';
 import * as fb from '../services/firebaseService';
 import { EmployerAuth } from './EmployerAuth';
+import { getAuth } from 'firebase/auth';
 
 const EmployerPage: React.FC = () => {
   const context = useContext(AppContext);
@@ -108,6 +109,10 @@ const EmployerPage: React.FC = () => {
       return <EmployerAuth />;
   }
 
+  // Verifica se o e-mail foi confirmado (somente quando Firebase está ativo)
+  const currentUser = fb.isEnabled() ? getAuth().currentUser : null;
+  const emailNotVerified = fb.isEnabled() && currentUser && !currentUser.emailVerified;
+
   // 3. Painel principal
   return (
     <div className="space-y-8">
@@ -158,19 +163,39 @@ const EmployerPage: React.FC = () => {
           </button>
         </div>
       )}
-      
+      {/* Banner: e-mail não verificado */}
+      {emailNotVerified && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 flex items-start gap-3">
+          <svg className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <div>
+            <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+              Verifique seu e-mail para publicar vagas.
+            </p>
+            <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+              Enviamos um link de verificação para <strong>{currentUser?.email}</strong>. Após confirmar, recarregue a página.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Coluna para publicar OU EDITAR uma vaga */}
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
           <h2 className="text-2xl font-bold mb-4">
-            {/* O título muda dinamicamente se estamos editando ou criando */}
             {editingJob ? `Editando Vaga: "${editingJob.title}"` : 'Publicar Nova Vaga'}
           </h2>
-          <PostJobForm 
-            jobToEdit={editingJob} 
-            // Passa uma função para limpar o estado de edição quando o formulário for concluído
-            onFinish={() => setEditingJob(null)}
-          />
+          {emailNotVerified ? (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Verifique seu e-mail antes de publicar vagas.
+            </p>
+          ) : (
+            <PostJobForm
+              jobToEdit={editingJob}
+              onFinish={() => setEditingJob(null)}
+            />
+          )}
         </div>
         {/* Coluna para listar vagas já publicadas */}
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">

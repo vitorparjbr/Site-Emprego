@@ -5,6 +5,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   User
 } from 'firebase/auth';
 import {
@@ -20,10 +22,15 @@ import {
   updateDoc,
   serverTimestamp,
   getDocs,
-  arrayUnion,
   getDoc,
   deleteField
 } from 'firebase/firestore';
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL
+} from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -69,20 +76,27 @@ const cleanData = (obj: any): any => {
 
 let auth: ReturnType<typeof getAuth> | null = null;
 let db: ReturnType<typeof getFirestore> | null = null;
+let storage: ReturnType<typeof getStorage> | null = null;
 
 if (enabled) {
   const app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = getFirestore(app);
+  storage = getStorage(app);
 }
 
 export const isEnabled = () => enabled;
 
+// ──────────────────────────────────────────────────────────────
 // Auth helpers
+// ──────────────────────────────────────────────────────────────
+
 export const signUp = async (companyName: string, email: string, password: string) => {
   if (!enabled || !auth || !db) throw new Error('Firebase not configured');
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCred.user;
+  // Envia e-mail de verificação imediatamente após o cadastro
+  await sendEmailVerification(user);
   const employer = {
     id: user.uid,
     companyName,
@@ -106,6 +120,15 @@ export const signOutUser = async () => {
 export const onAuthChanged = (cb: (user: User | null) => void) => {
   if (!enabled || !auth) return () => {};
   return onAuthStateChanged(auth, cb);
+};
+
+/**
+ * Envia e-mail de redefinição de senha.
+ * Chame com o e-mail do empregador quando clicar em "Esqueci minha senha".
+ */
+export const resetPassword = async (email: string) => {
+  if (!enabled || !auth) throw new Error('Firebase not configured');
+  await sendPasswordResetEmail(auth, email);
 };
 
 // Employer helpers
@@ -161,6 +184,28 @@ export const deleteJob = async (id: string) => {
   if (!enabled || !db) throw new Error('Firebase not configured');
   await deleteDoc(doc(db, 'jobs', id));
 };
+
+// ──────────────────────────────────────────────────────────────
+// Storage helper — upload de currículo
+// ──────────────────────────────────────────────────────────────
+
+/**
+ * Faz upload do arquivo de currículo para o Firebase Storage.
+ * @returns URL pública permanente para download
+ */
+export const uploadResume = async (file: File, jobId: string): Promise<string> => {
+  if (!enabled || !storage) throw new Error('Firebase Storage não configurado');
+  // Caminho: curriculos/{jobId}/{timestamp}_{nomeDoArquivo}
+  const path = `curriculos/${jobId}/${Date.now()}_${file.name}`;
+  const fileRef = storageRef(storage, path);
+  const snapshot = await uploadBytes(fileRef, file);
+  const downloadUrl = await getDownloadURL(snapshot.ref);
+  return downloadUrl;
+};
+
+// ──────────────────────────────────────────────────────────────
+// Applications helpers
+// ──────────────────────────────────────────────────────────────
 
 export const addApplication = async (jobId: string, application: any) => {
   if (!enabled || !db) throw new Error('Firebase not configured');

@@ -5,6 +5,7 @@ export const MOCK_JOBS: Job[] = [
   {
     id: 'job-1',
     employerId: 'emp-1',
+    jobType: 'emprego',
     title: 'Auxiliar Administrativo',
     companyName: 'Tech Solutions Ltda.',
     location: 'São Paulo, SP',
@@ -25,6 +26,7 @@ export const MOCK_JOBS: Job[] = [
   {
     id: 'job-2',
     employerId: 'emp-2',
+    jobType: 'emprego',
     title: 'Mecânico de Manutenção',
     companyName: 'Indústria Metalúrgica Brasil',
     location: 'Rio de Janeiro, RJ',
@@ -45,6 +47,7 @@ export const MOCK_JOBS: Job[] = [
   {
     id: 'job-3',
     employerId: 'emp-1',
+    jobType: 'estagio',
     title: 'Estágio em Marketing Digital',
     location: 'Belo Horizonte, MG',
     salary: 'R$ 1.200,00 (Bolsa auxílio)',
@@ -60,9 +63,10 @@ export const MOCK_JOBS: Job[] = [
     applications: [],
     resumePreference: 'text'
   },
-    {
+  {
     id: 'job-4',
     employerId: 'emp-2',
+    jobType: 'jovem-aprendiz',
     title: 'Jovem Aprendiz - Logística',
     companyName: 'Log Express',
     location: 'Curitiba, PR',
@@ -85,14 +89,14 @@ export const MOCK_EMPLOYERS: Employer[] = [
     {
         id: 'emp-1',
         companyName: 'Tech Solutions Ltda.',
-        email: 'contato@techsolutions.com',
-        password: 'password123'
+        email: 'contato@techsolutions.com'
+        // Senha gerenciada pelo Firebase Authentication
     },
     {
         id: 'emp-2',
         companyName: 'Indústria Metalúrgica Brasil',
-        email: 'rh@industriametal.com.br',
-        password: 'password123'
+        email: 'rh@industriametal.com.br'
+        // Senha gerenciada pelo Firebase Authentication
     }
 ];
 
