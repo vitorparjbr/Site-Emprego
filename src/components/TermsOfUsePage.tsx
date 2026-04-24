@@ -21,14 +21,14 @@ const TermsOfUsePage: React.FC = () => {
         </div>
 
         <p>
-          Bem-vindo(a) à <strong>Job Finder Pro</strong>. Ao utilizar esta plataforma, você concorda com os
+          Bem-vindo(a) à <strong>Vagas Para Todos</strong>. Ao utilizar esta plataforma, você concorda com os
           termos e condições descritos abaixo. Leia com atenção antes de utilizar nossos serviços.
         </p>
 
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">1. Sobre a plataforma</h2>
           <p>
-            A Job Finder Pro é uma plataforma gratuita que conecta candidatos a oportunidades de emprego,
+            A Vagas Para Todos é uma plataforma gratuita que conecta candidatos a oportunidades de emprego,
             estágio, jovem aprendiz e cursos divulgados por empregadores cadastrados.
           </p>
         </section>
@@ -39,7 +39,7 @@ const TermsOfUsePage: React.FC = () => {
             <li>Para publicar vagas, é necessário criar uma conta com e-mail e senha.</li>
             <li>O empregador é responsável pela veracidade das informações cadastradas.</li>
             <li>É proibido criar contas falsas ou se passar por outra empresa.</li>
-            <li>A Job Finder Pro reserva o direito de remover contas que violem estes termos.</li>
+            <li>A Vagas Para Todos reserva o direito de remover contas que violem estes termos.</li>
           </ul>
         </section>
 
@@ -52,7 +52,7 @@ const TermsOfUsePage: React.FC = () => {
               Não é permitido solicitar pagamento de candidatos em nenhuma etapa do processo seletivo.
             </li>
             <li>
-              A Job Finder Pro pode remover vagas que violem estes termos sem aviso prévio.
+              A Vagas Para Todos pode remover vagas que violem estes termos sem aviso prévio.
             </li>
           </ul>
         </section>
@@ -62,14 +62,14 @@ const TermsOfUsePage: React.FC = () => {
           <ul className="list-disc list-inside ml-2 space-y-1">
             <li>Ao enviar uma candidatura, o candidato autoriza que seus dados sejam visualizados pelo empregador responsável pela vaga.</li>
             <li>O candidato é responsável pela veracidade dos dados e do currículo enviado.</li>
-            <li>A Job Finder Pro não intervém nem se responsabiliza pelo processo seletivo entre candidato e empregador.</li>
+            <li>A Vagas Para Todos não intervém nem se responsabiliza pelo processo seletivo entre candidato e empregador.</li>
           </ul>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">5. Responsabilidades</h2>
           <p>
-            A Job Finder Pro atua como intermediária e não se responsabiliza por:
+            A Vagas Para Todos atua como intermediária e não se responsabiliza por:
           </p>
           <ul className="list-disc list-inside ml-2 space-y-1">
             <li>A veracidade das vagas publicadas pelos empregadores</li>
@@ -91,7 +91,7 @@ const TermsOfUsePage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">7. Propriedade intelectual</h2>
           <p>
-            O design, o código e os conteúdos originais da Job Finder Pro são de propriedade exclusiva
+            O design, o código e os conteúdos originais da Vagas Para Todos são de propriedade exclusiva
             da plataforma e não podem ser copiados ou reproduzidos sem autorização.
           </p>
         </section>
@@ -108,8 +108,8 @@ const TermsOfUsePage: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">9. Contato</h2>
           <p>
             Dúvidas ou denúncias:{' '}
-            <a href="mailto:contatosjobfinderpro@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">
-              contatosjobfinderpro@gmail.com
+            <a href="mailto:contato@vagasparatodos.com.br" className="text-blue-600 dark:text-blue-400 hover:underline">
+              contato@vagasparatodos.com.br
             </a>
           </p>
         </section>

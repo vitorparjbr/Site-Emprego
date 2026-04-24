@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
           </button>
         </div>
         <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-          © {new Date().getFullYear()} Job Finder Pro. Todos os direitos reservados.
+          © {new Date().getFullYear()} Vagas Para Todos. Todos os direitos reservados.
         </p>
       </div>
     </footer>

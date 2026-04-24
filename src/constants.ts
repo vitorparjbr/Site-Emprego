@@ -102,11 +102,11 @@ export const MOCK_EMPLOYERS: Employer[] = [
 
 export const MOCK_ABOUT_US = `
 <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Quem Somos</h2>
-<p class="mb-4 text-gray-700 dark:text-gray-300">A Job Finder Pro nasceu com a missão de simplificar e humanizar o processo de recrutamento e seleção. Acreditamos que conectar o talento certo à oportunidade certa pode transformar vidas e impulsionar negócios. Nossa plataforma foi desenhada para ser intuitiva, eficiente e acessível tanto para candidatos em busca de novas oportunidades quanto para empresas que procuram os melhores profissionais.</p>
+<p class="mb-4 text-gray-700 dark:text-gray-300">A <strong>Vagas Para Todos</strong> nasceu com a missão de democratizar o acesso às oportunidades no Brasil. Acreditamos que conectar o talento certo à oportunidade certa pode transformar vidas e impulsionar negócios. Nossa plataforma foi desenhada para ser intuitiva, eficiente e acessível tanto para quem busca o primeiro emprego quanto para profissionais experientes e empresas que procuram os melhores talentos.</p>
 <h3 class="text-xl font-semibold mb-2">Nossos Serviços</h3>
 <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-  <li><strong>Para Candidatos:</strong> Oferecemos uma vasta gama de vagas em todo o Brasil, com filtros de busca avançados, alertas de vagas personalizadas e um processo de candidatura simplificado. Tudo de forma 100% gratuita.</li>
-  <li><strong>Para Empregadores:</strong> Disponibilizamos uma plataforma robusta para publicação e gerenciamento de vagas, com um painel de controle exclusivo para acompanhar candidaturas, visualizar currículos e entrar em contato com os talentos mais promissores do mercado.</li>
+  <li><strong>Para Candidatos:</strong> Oferecemos uma vasta gama de vagas em todo o Brasil (Emprego, Estágio e Jovem Aprendiz), com filtros de busca avançados e um processo de candidatura direto. Tudo de forma 100% gratuita.</li>
+  <li><strong>Para Empregadores:</strong> Disponibilizamos uma plataforma robusta para publicação e gerenciamento de vagas, com um painel exclusivo para acompanhar candidaturas e visualizar currículos dos talentos mais promissores do mercado.</li>
 </ul>
 <p class="mt-4 text-gray-700 dark:text-gray-300">Nosso compromisso é com a transparência, a inovação e o sucesso de nossos usuários. Junte-se a nós e encontre hoje mesmo o seu próximo passo profissional ou o candidato ideal para sua equipe!</p>
 `;

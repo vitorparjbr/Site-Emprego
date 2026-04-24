@@ -24,6 +24,8 @@ const HomePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   // Estado local para o filtro de localização
   const [locationFilter, setLocationFilter] = useState('');
+  // Estado local para o filtro de tipo de vaga
+  const [jobTypeFilter, setJobTypeFilter] = useState('');
   // Estado local para a vaga selecionada (para exibir o modal de detalhes)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   // Controle de foco dos dropdowns
@@ -40,6 +42,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     setSearchTerm('');
     setLocationFilter('');
+    setJobTypeFilter('');
     setSelectedJob(null);
   }, [homeResetKey]);
 
@@ -89,7 +92,7 @@ const HomePage: React.FC = () => {
   const locationSuggestions = useMemo(() => {
     if (!locationFilter.trim()) return [];
     const lower = locationFilter.toLowerCase();
-    return [...new Set(jobs.map(j => j.location).filter(Boolean))]
+    return [...new Set(jobs.map(j => j.location).filter(Boolean) as string[])]
       .filter(s => s.toLowerCase().includes(lower) && s.toLowerCase() !== lower)
       .slice(0, 6);
   }, [jobs, locationFilter]);
@@ -99,9 +102,11 @@ const HomePage: React.FC = () => {
       const matchesSearchTerm = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               (job.companyName && job.companyName.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesLocation = job.location.toLowerCase().includes(locationFilter.toLowerCase());
-      return matchesSearchTerm && matchesLocation;
+      const matchesJobType = jobTypeFilter ? job.jobType === jobTypeFilter : true;
+      
+      return matchesSearchTerm && matchesLocation && matchesJobType;
     });
-  }, [jobs, searchTerm, locationFilter]);
+  }, [jobs, searchTerm, locationFilter, jobTypeFilter]);
   
   // Função para abrir o modal de detalhes da vaga
   const handleJobClick = (job: Job) => {
@@ -115,6 +120,31 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="space-y-8">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 md:p-12 text-center text-white shadow-lg relative overflow-hidden">
+        <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+            Sua próxima oportunidade está aqui
+          </h1>
+          <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto">
+            Vagas de emprego, estágio e jovem aprendiz em todo o Brasil. Conectamos você às melhores empresas.
+          </p>
+          <div className="pt-4">
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              className="bg-white text-blue-700 font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-50 hover:scale-105 transition-all duration-300 text-lg"
+            >
+              🔍 Buscar Vagas
+            </button>
+          </div>
+        </div>
+        {/* Background decoration */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+          <svg className="absolute w-64 h-64 -top-10 -left-10 text-white" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
+          <svg className="absolute w-96 h-96 -bottom-20 -right-20 text-white" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
+        </div>
+      </div>
+
       {/* Modal de busca flutuante */}
       {searchModalOpen && (
         <div
@@ -188,6 +218,22 @@ const HomePage: React.FC = () => {
                     ))}
                   </ul>
                 )}
+              </div>
+              
+              {/* Campo: Tipo de Vaga */}
+              <div>
+                <select
+                  value={jobTypeFilter}
+                  onChange={(e) => setJobTypeFilter(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  aria-label="Filtrar por tipo de vaga"
+                >
+                  <option value="">Todos os tipos de vaga</option>
+                  <option value="emprego">Emprego</option>
+                  <option value="estagio">Estágio</option>
+                  <option value="jovem-aprendiz">Jovem Aprendiz</option>
+                  <option value="curso">Curso / Treinamento</option>
+                </select>
               </div>
               <button
                 onClick={closeSearchModal}

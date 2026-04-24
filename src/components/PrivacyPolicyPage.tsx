@@ -21,7 +21,7 @@ const PrivacyPolicyPage: React.FC = () => {
         </div>
 
         <p>
-          A <strong>Job Finder Pro</strong> valoriza a privacidade de seus usuários e está comprometida com a
+          A <strong>Vagas Para Todos</strong> valoriza a privacidade de seus usuários e está comprometida com a
           proteção dos dados pessoais coletados nesta plataforma, em conformidade com a{' '}
           <strong>Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018)</strong>.
         </p>
@@ -29,7 +29,7 @@ const PrivacyPolicyPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">1. Quem somos</h2>
           <p>
-            Responsável pelo tratamento dos dados: <strong>Job Finder Pro</strong>.<br />
+            Responsável pelo tratamento dos dados: <strong>Vagas Para Todos</strong>.<br />
             Contato do encarregado (DPO): <a href="mailto:contatosjobfinderpro@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">contatosjobfinderpro@gmail.com</a>
           </p>
         </section>
@@ -103,8 +103,8 @@ const PrivacyPolicyPage: React.FC = () => {
           </ul>
           <p className="mt-2">
             Para exercer qualquer desses direitos, entre em contato:{' '}
-            <a href="mailto:contatosjobfinderpro@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">
-              contatosjobfinderpro@gmail.com
+            <a href="mailto:contato@vagasparatodos.com.br" className="text-blue-600 dark:text-blue-400 hover:underline">
+              contato@vagasparatodos.com.br
             </a>
           </p>
         </section>
@@ -129,8 +129,8 @@ const PrivacyPolicyPage: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">9. Contato</h2>
           <p>
             Dúvidas sobre esta política:{' '}
-            <a href="mailto:contatosjobfinderpro@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">
-              contatosjobfinderpro@gmail.com
+            <a href="mailto:contato@vagasparatodos.com.br" className="text-blue-600 dark:text-blue-400 hover:underline">
+              contato@vagasparatodos.com.br
             </a>
           </p>
         </section>
