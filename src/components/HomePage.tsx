@@ -130,7 +130,14 @@ const HomePage: React.FC = () => {
     <div className="space-y-8">
       {/* Hero Section */}
       {!hasSearched && (
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 md:p-12 text-center text-white shadow-lg relative overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 md:p-12 text-center text-white shadow-lg relative overflow-hidden group">
+          <button
+            onClick={() => setHasSearched(true)}
+            className="absolute top-4 right-4 p-2 text-blue-200 hover:text-white hover:bg-blue-700/50 rounded-full transition-colors z-20"
+            aria-label="Fechar banner"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
           <div className="relative z-10 max-w-3xl mx-auto space-y-6">
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
               Sua oportunidade está aqui
