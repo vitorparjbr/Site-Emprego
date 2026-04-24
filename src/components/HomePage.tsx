@@ -28,6 +28,8 @@ const HomePage: React.FC = () => {
   const [jobTypeFilter, setJobTypeFilter] = useState('');
   // Estado local para a vaga selecionada (para exibir o modal de detalhes)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  // Estado local para saber se já fez uma busca
+  const [hasSearched, setHasSearched] = useState(false);
   // Controle de foco dos dropdowns
   const [searchFocused, setSearchFocused] = useState(false);
   const [locationFocused, setLocationFocused] = useState(false);
@@ -44,6 +46,7 @@ const HomePage: React.FC = () => {
     setLocationFilter('');
     setJobTypeFilter('');
     setSelectedJob(null);
+    setHasSearched(false);
   }, [homeResetKey]);
 
   // Fechar dropdown ao clicar fora
@@ -76,6 +79,11 @@ const HomePage: React.FC = () => {
     setSearchModalOpen(false);
     setSearchFocused(false);
     setLocationFocused(false);
+  };
+
+  const handleSearch = () => {
+    setHasSearched(true);
+    closeSearchModal();
   };
 
   // Sugestões únicas para os dropdowns
@@ -121,29 +129,31 @@ const HomePage: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 md:p-12 text-center text-white shadow-lg relative overflow-hidden">
-        <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-            Sua próxima oportunidade está aqui
-          </h1>
-          <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto">
-            Vagas de emprego, estágio e jovem aprendiz em todo o Brasil. Conectamos você às melhores empresas.
-          </p>
-          <div className="pt-4">
-            <button
-              onClick={() => setSearchModalOpen(true)}
-              className="bg-white text-blue-700 font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-50 hover:scale-105 transition-all duration-300 text-lg"
-            >
-              🔍 Buscar Vagas
-            </button>
+      {!hasSearched && (
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 md:p-12 text-center text-white shadow-lg relative overflow-hidden">
+          <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+              Sua oportunidade está aqui
+            </h1>
+            <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto">
+              Vagas de emprego, estágio e jovem aprendiz em todo o Brasil.
+            </p>
+            <div className="pt-4">
+              <button
+                onClick={() => setSearchModalOpen(true)}
+                className="bg-white text-blue-700 font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-50 hover:scale-105 transition-all duration-300 text-lg"
+              >
+                Buscar Vagas
+              </button>
+            </div>
+          </div>
+          {/* Background decoration */}
+          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+            <svg className="absolute w-64 h-64 -top-10 -left-10 text-white" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
+            <svg className="absolute w-96 h-96 -bottom-20 -right-20 text-white" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
           </div>
         </div>
-        {/* Background decoration */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-          <svg className="absolute w-64 h-64 -top-10 -left-10 text-white" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
-          <svg className="absolute w-96 h-96 -bottom-20 -right-20 text-white" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
-        </div>
-      </div>
+      )}
 
       {/* Modal de busca flutuante */}
       {searchModalOpen && (
@@ -236,7 +246,7 @@ const HomePage: React.FC = () => {
                 </select>
               </div>
               <button
-                onClick={closeSearchModal}
+                onClick={handleSearch}
                 className="mt-1 w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
               >
                 Ver resultados
