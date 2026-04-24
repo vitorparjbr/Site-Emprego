@@ -28,6 +28,7 @@ export const AppContext = React.createContext<{
   updateJob: (jobId: string, jobData: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => void;
   addApplication: (jobId: string, application: Omit<Application, 'id' | 'date'>) => void;
   deleteJob: (jobId: string) => void;
+  renewJob: (jobId: string) => void;
   searchModalOpen: boolean;
   setSearchModalOpen: (open: boolean) => void;
   homeResetKey: number;
@@ -186,6 +187,17 @@ const App: React.FC = () => {
     setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
   }, []);
 
+  // Função para renovar uma vaga expirada (reseta o timer de 7 dias)
+  const renewJob = useCallback((jobId: string) => {
+    if (fb.isEnabled()) {
+      fb.renewJob(jobId).catch(() => {});
+      return;
+    }
+    setJobs(prevJobs => prevJobs.map(job =>
+      job.id === jobId ? { ...job, postedDate: new Date().toISOString() } : job
+    ));
+  }, []);
+
   // Função para adicionar uma nova candidatura a uma vaga
   const addApplication = useCallback((jobId: string, applicationData: Omit<Application, 'id' | 'date'>) => {
     if (fb.isEnabled()) {
@@ -264,12 +276,13 @@ const App: React.FC = () => {
     addJob,
     updateJob,
     deleteJob,
+    renewJob,
     addApplication,
     searchModalOpen,
     setSearchModalOpen,
     homeResetKey,
     resetHome,
-  }), [jobs, loggedInEmployer, updateEmployerName, addJob, updateJob, addApplication, searchModalOpen, homeResetKey, resetHome]);
+  }), [jobs, loggedInEmployer, updateEmployerName, addJob, updateJob, deleteJob, renewJob, addApplication, searchModalOpen, homeResetKey, resetHome]);
 
   // O Provider do AppContext envolve a aplicação, disponibilizando o 'contextValue'
   // para todos os componentes filhos que precisarem dele.

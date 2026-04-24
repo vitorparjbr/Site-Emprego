@@ -106,7 +106,12 @@ const HomePage: React.FC = () => {
   }, [jobs, locationFilter]);
 
   const filteredJobs = useMemo(() => {
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
     return jobs.filter(job => {
+      // Oculta vagas com mais de 7 dias de publicação
+      const postedAt = new Date(job.postedDate).getTime();
+      if (Date.now() - postedAt > SEVEN_DAYS_MS) return false;
+
       const matchesSearchTerm = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               (job.companyName && job.companyName.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesLocation = job.location.toLowerCase().includes(locationFilter.toLowerCase());

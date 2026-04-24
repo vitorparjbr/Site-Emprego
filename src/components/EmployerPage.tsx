@@ -22,13 +22,23 @@ const EmployerPage: React.FC = () => {
 
   if (!context) return <div>Carregando...</div>;
 
-  const { loggedInEmployer, updateEmployerName, jobs, deleteJob } = context;
+  const { loggedInEmployer, updateEmployerName, jobs, deleteJob, renewJob } = context;
+
+  const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
   // Memoiza a lista de vagas do empregador para otimização
   const employerJobs = useMemo(() => {
     if (!loggedInEmployer) return [];
     return jobs.filter(job => job.employerId === loggedInEmployer.id);
   }, [jobs, loggedInEmployer]);
+
+  const activeJobs = useMemo(() =>
+    employerJobs.filter(job => Date.now() - new Date(job.postedDate).getTime() <= SEVEN_DAYS_MS)
+  , [employerJobs]);
+
+  const expiredJobs = useMemo(() =>
+    employerJobs.filter(job => Date.now() - new Date(job.postedDate).getTime() > SEVEN_DAYS_MS)
+  , [employerJobs]);
 
   // Carrega contagem de aplicações para cada vaga do empregador quando Firebase está habilitado
   useEffect(() => {
@@ -201,14 +211,13 @@ const EmployerPage: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
           <h2 className="text-2xl font-bold mb-4">Suas Vagas Publicadas</h2>
           <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
-            {employerJobs.length > 0 ? employerJobs.map(job => (
+            {activeJobs.length > 0 ? activeJobs.map(job => (
               <div key={job.id} className="p-4 border rounded-md dark:border-gray-700 flex justify-between items-center gap-2">
                 <div>
                   <h3 className="font-semibold">{job.title}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{job.location} - {applicationCounts[job.id] ?? job.applications.length} candidato(s)</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* NOVO: Botão para colocar a vaga em modo de edição */}
                     <button 
                       onClick={() => setEditingJob(job)} 
                       className="p-2 text-sm text-white bg-yellow-500 rounded-full hover:bg-yellow-600"
@@ -235,8 +244,63 @@ const EmployerPage: React.FC = () => {
                     </button>
                 </div>
               </div>
-            )) : <p>Você ainda não publicou nenhuma vaga.</p>}
+            )) : <p>Você ainda não publicou nenhuma vaga ativa.</p>}
           </div>
+
+          {/* Vagas Expiradas */}
+          {expiredJobs.length > 0 && (
+            <div className="mt-6">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="h-5 w-5 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+                <h3 className="text-lg font-semibold text-orange-600 dark:text-orange-400">
+                  Vagas Expiradas ({expiredJobs.length})
+                </h3>
+              </div>
+              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-3 mb-3 text-sm text-orange-800 dark:text-orange-300">
+                Essas vagas foram publicadas há mais de 7 dias e <strong>não estão mais visíveis para os candidatos</strong>. Se a vaga já foi preenchida, exclua-a. Caso contrário, renove-a para que volte a aparecer no site.
+              </div>
+              <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                {expiredJobs.map(job => (
+                  <div key={job.id} className="p-3 border border-orange-200 dark:border-orange-700 bg-orange-50/50 dark:bg-orange-900/10 rounded-md">
+                    <div className="flex justify-between items-start gap-2 flex-wrap">
+                      <div>
+                        <h4 className="font-semibold text-gray-800 dark:text-gray-200">{job.title}</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {job.location} · Expirou em {new Date(new Date(job.postedDate).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Deseja renovar esta vaga?\nEla voltará a aparecer para os candidatos por mais 7 dias.')) {
+                              renewJob(job.id);
+                            }
+                          }}
+                          className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700"
+                          title="Renovar Vaga por mais 7 dias"
+                        >
+                          Renovar
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Tem certeza que deseja excluir esta vaga?\nEsta ação não poderá ser desfeita.')) {
+                              deleteJob(job.id);
+                            }
+                          }}
+                          className="p-1.5 text-white bg-red-600 rounded-full hover:bg-red-700"
+                          title="Excluir Vaga"
+                        >
+                          <XMarkIcon className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

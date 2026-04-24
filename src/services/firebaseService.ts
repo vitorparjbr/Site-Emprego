@@ -185,6 +185,11 @@ export const deleteJob = async (id: string) => {
   await deleteDoc(doc(db, 'jobs', id));
 };
 
+export const renewJob = async (id: string) => {
+  if (!enabled || !db) throw new Error('Firebase not configured');
+  await updateDoc(doc(db, 'jobs', id), { createdAt: serverTimestamp() });
+};
+
 // ──────────────────────────────────────────────────────────────
 // Storage helper — upload de currículo
 // ──────────────────────────────────────────────────────────────
