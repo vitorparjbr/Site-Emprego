@@ -159,11 +159,6 @@ const HomePage: React.FC = () => {
               </button>
             </div>
           </div>
-          {/* Background decoration */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-            <svg className="absolute w-64 h-64 -top-10 -left-10 text-white" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
-            <svg className="absolute w-96 h-96 -bottom-20 -right-20 text-white" fill="currentColor" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
-          </div>
         </div>
       )}
 
