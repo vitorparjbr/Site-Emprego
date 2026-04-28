@@ -2,7 +2,6 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../App';
 import { Page } from '../types';
-import { BriefcaseIcon } from './icons/BriefcaseIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
 
 const Header: React.FC = () => {
@@ -39,9 +38,8 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <button onClick={() => handleNavClick('home')} className="flex-shrink-0 flex items-center gap-2">
-              <BriefcaseIcon className="h-8 w-8 text-blue-600 dark:text-blue-500" />
-              <span className="font-bold text-xl text-gray-800 dark:text-white">Vagas Para Todos</span>
+            <button onClick={() => handleNavClick('home')} className="flex-shrink-0 flex items-center">
+              <img src="/Vagas Para Todos-logo.png" alt="Vagas Para Todos" className="h-10 w-auto" />
             </button>
           </div>
           <div className="hidden md:block">
