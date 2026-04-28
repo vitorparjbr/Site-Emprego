@@ -10,10 +10,8 @@ const InputField: React.FC<{
   value: string, 
   onChange: (val: string) => void, 
   required?: boolean, 
-  placeholder?: string,
-  disabled?: boolean,
-  hint?: string
-}> = ({ label, value, onChange, required, placeholder, disabled, hint }) => (
+  placeholder?: string
+}> = ({ label, value, onChange, required, placeholder }) => (
     <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}{required && ' *'}</label>
         <input 
@@ -22,83 +20,10 @@ const InputField: React.FC<{
             onChange={(e) => onChange(e.target.value)} 
             required={required}
             placeholder={placeholder}
-            disabled={disabled}
-            className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 ${
-              disabled ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed' : ''
-            }`}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600"
         />
-        {hint && <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{hint}</p>}
     </div>
 );
-
-// Calcula a carga horária semanal a partir do texto do horário
-function calcWeeklyHours(schedule: string): string {
-  if (!schedule.trim()) return '';
-
-  // Normaliza: remove acentos e coloca em minúsculas
-  const text = schedule
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-
-  // Helper: extrai horas efetivas de um intervalo de texto ("7:00 as 19:00" → 11)
-  const extractDailyHours = (src: string): number | null => {
-    const timeRx = /(\d{1,2})(?::(\d{2}))?(?:\s*h)?\s*(?:as|a\s|ate|-|–)\s*(\d{1,2})(?::(\d{2}))?(?:\s*h)?/;
-    const tm = src.match(timeRx);
-    if (!tm) return null;
-    const sh = parseInt(tm[1], 10);
-    const sm = parseInt(tm[2] ?? '0', 10);
-    const eh = parseInt(tm[3], 10);
-    const em = parseInt(tm[4] ?? '0', 10);
-    const rawMins = (eh * 60 + em) - (sh * 60 + sm);
-    if (rawMins <= 0) return null;
-    const rawHours = rawMins / 60;
-    // Desconta 1h de intervalo obrigatório (CLT) para jornadas acima de 6h
-    return rawHours > 6 ? rawHours - 1 : rawHours;
-  };
-
-  // 1. Detecta escala NxM: "12x36", "24x48", "12 x 36", etc.
-  const nxmRx = /(\d+)\s*x\s*(\d+)/;
-  const nxm = text.match(nxmRx);
-  if (nxm) {
-    const workH = parseInt(nxm[1], 10);
-    const restH = parseInt(nxm[2], 10);
-    const cycle = workH + restH;
-    if (cycle > 0) {
-      const weekly = Math.round((168 / cycle) * workH);
-      return `~${weekly}h/semana`;
-    }
-  }
-
-  // 2. Detecta "dia sim dia nao" / "dia sim, dia nao" (escala alternada ≈ 3,5 dias/semana)
-  if (/dia\s+sim[,\s]+dia\s+nao/.test(text)) {
-    const daily = extractDailyHours(text);
-    const weekly = daily !== null ? Math.round(daily * 3.5) : 42;
-    return `~${weekly}h/semana`;
-  }
-
-  // 3. Jornada convencional: extrai horas e intervalo de dias
-  const daily = extractDailyHours(text);
-  if (daily === null) return '';
-
-  const dayIdx: Record<string, number> = {
-    'segunda': 1, 'terca': 2, 'quarta': 3,
-    'quinta': 4, 'sexta': 5, 'sabado': 6, 'domingo': 7,
-  };
-  const dayList = Object.keys(dayIdx).join('|');
-  const rangeRx = new RegExp(`(${dayList})(?:-feira)?\\s+[ae]\\s+(${dayList})(?:-feira)?`);
-  const rm = text.match(rangeRx);
-
-  let days = 5; // padrão: segunda a sexta
-  if (rm) {
-    const d1 = dayIdx[rm[1]] ?? 1;
-    const d2 = dayIdx[rm[2]] ?? 5;
-    days = Math.max(1, d2 - d1 + 1);
-  }
-
-  const weekly = Math.round(daily * days);
-  return `${weekly}h/semana`;
-}
 
 // Componente TextAreaField reutilizável
 const TextAreaField: React.FC<{
@@ -151,12 +76,6 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
     const [resumePreference, setResumePreference] = useState<'file' | 'text' | 'both' | 'none'>('file');
 
     const context = useContext(AppContext);
-
-    // Recalcula carga horária sempre que o horário muda
-    useEffect(() => {
-        const calculated = calcWeeklyHours(workSchedule);
-        if (calculated) setWorkHours(calculated);
-    }, [workSchedule]);
 
     const resetForm = () => {
         setJobType('emprego');
@@ -389,20 +308,18 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
                         placeholder="Ex: VT, VR, Plano de Saúde, Vale Alimentação"
                     />
                     <InputField 
-                        label="Horário" 
-                        value={workSchedule} 
-                        onChange={setWorkSchedule} 
-                        required
-                        placeholder="Ex: Segunda a Sexta, 09h às 18h"
-                    />
-                    <InputField 
                         label="Carga Horária" 
                         value={workHours} 
                         onChange={setWorkHours} 
                         required
-                        disabled
-                        placeholder="Calculado automaticamente a partir do Horário"
-                        hint="Calculado automaticamente (jornada diária − 1h de intervalo CLT × dias da semana)"
+                        placeholder={jobType === 'jovem-aprendiz' ? 'Ex: 20 horas/semana' : 'Ex: 40 horas/semana'}
+                    />
+                    <InputField 
+                        label="Horário" 
+                        value={workSchedule} 
+                        onChange={setWorkSchedule} 
+                        required
+                        placeholder="Ex: Segunda a Sexta, 09h-18h"
                     />
                     <InputField 
                         label="Modalidade" 
