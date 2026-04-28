@@ -308,18 +308,18 @@ const PostJobForm: React.FC<PostJobFormProps> = ({ jobToEdit, onFinish }) => {
                         placeholder="Ex: VT, VR, Plano de Saúde, Vale Alimentação"
                     />
                     <InputField 
+                        label="Escala" 
+                        value={workSchedule} 
+                        onChange={setWorkSchedule} 
+                        required
+                        placeholder="Ex: Segunda a Sexta, 09h-18h"
+                    />
+                    <InputField 
                         label="Carga Horária" 
                         value={workHours} 
                         onChange={setWorkHours} 
                         required
                         placeholder={jobType === 'jovem-aprendiz' ? 'Ex: 20 horas/semana' : 'Ex: 40 horas/semana'}
-                    />
-                    <InputField 
-                        label="Horário" 
-                        value={workSchedule} 
-                        onChange={setWorkSchedule} 
-                        required
-                        placeholder="Ex: Segunda a Sexta, 09h-18h"
                     />
                     <InputField 
                         label="Modalidade" 
