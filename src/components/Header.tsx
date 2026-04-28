@@ -39,7 +39,7 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <button onClick={() => handleNavClick('home')} className="flex-shrink-0 flex items-center">
-              <img src="/Vagas Para Todos-logo.png" alt="Vagas Para Todos" className="h-10 w-auto" />
+              <img src={`${import.meta.env.BASE_URL}Vagas Para Todos-logo.png`} alt="Vagas Para Todos" className="h-10 w-auto" />
             </button>
           </div>
           <div className="hidden md:block">
