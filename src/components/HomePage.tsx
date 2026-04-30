@@ -26,6 +26,9 @@ const HomePage: React.FC = () => {
   const [locationFilter, setLocationFilter] = useState('');
   // Estado local para o filtro de tipo de vaga
   const [jobTypeFilter, setJobTypeFilter] = useState('');
+  // Valores com debounce de 500ms — evita re-renderizações excessivas enquanto o usuário digita
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [debouncedLocationFilter, setDebouncedLocationFilter] = useState('');
   // Estado local para a vaga selecionada (para exibir o modal de detalhes)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   // Estado local para saber se já fez uma busca
@@ -45,9 +48,22 @@ const HomePage: React.FC = () => {
     setSearchTerm('');
     setLocationFilter('');
     setJobTypeFilter('');
+    setDebouncedSearchTerm('');
+    setDebouncedLocationFilter('');
     setSelectedJob(null);
     setHasSearched(false);
   }, [homeResetKey]);
+
+  // Debouncing 500ms para os campos de texto
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearchTerm(searchTerm), 500);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedLocationFilter(locationFilter), 500);
+    return () => clearTimeout(t);
+  }, [locationFilter]);
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -73,7 +89,7 @@ const HomePage: React.FC = () => {
     </div>
   );
 
-  const { jobs, searchModalOpen, setSearchModalOpen } = context;
+  const { jobs, searchModalOpen, setSearchModalOpen, loadMoreJobs, hasMoreJobs, loadingMoreJobs } = context;
 
   const closeSearchModal = () => {
     setSearchModalOpen(false);
@@ -112,14 +128,14 @@ const HomePage: React.FC = () => {
       const postedAt = new Date(job.postedDate).getTime();
       if (Date.now() - postedAt > SEVEN_DAYS_MS) return false;
 
-      const matchesSearchTerm = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              (job.companyName && job.companyName.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesLocation = job.location.toLowerCase().includes(locationFilter.toLowerCase());
+      const matchesSearchTerm = job.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) || 
+                              (job.companyName && job.companyName.toLowerCase().includes(debouncedSearchTerm.toLowerCase()));
+      const matchesLocation = job.location.toLowerCase().includes(debouncedLocationFilter.toLowerCase());
       const matchesJobType = jobTypeFilter ? job.jobType === jobTypeFilter : true;
       
       return matchesSearchTerm && matchesLocation && matchesJobType;
     });
-  }, [jobs, searchTerm, locationFilter, jobTypeFilter]);
+  }, [jobs, debouncedSearchTerm, debouncedLocationFilter, jobTypeFilter]);
   
   // Função para abrir o modal de detalhes da vaga
   const handleJobClick = (job: Job) => {
@@ -298,6 +314,27 @@ const HomePage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Botão Carregar mais — só aparece quando há mais vagas no Firestore */}
+      {hasMoreJobs && (
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={loadMoreJobs}
+            disabled={loadingMoreJobs}
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-md transition-colors flex items-center gap-2"
+          >
+            {loadingMoreJobs ? (
+              <>
+                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Carregando...
+              </>
+            ) : 'Carregar mais vagas'}
+          </button>
+        </div>
+      )}
 
       {/* Renderiza o modal de detalhes da vaga se uma vaga estiver selecionada */}
       {selectedJob && (

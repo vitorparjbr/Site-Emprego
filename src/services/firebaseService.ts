@@ -11,6 +11,10 @@ import {
 } from 'firebase/auth';
 import {
   getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  Firestore,
   collection,
   addDoc,
   doc,
@@ -25,6 +29,7 @@ import {
   getDoc,
   deleteField,
   limit,
+  startAfter,
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -76,13 +81,16 @@ const cleanData = (obj: any): any => {
 
 
 let auth: ReturnType<typeof getAuth> | null = null;
-let db: ReturnType<typeof getFirestore> | null = null;
+let db: Firestore | null = null;
 let storage: ReturnType<typeof getStorage> | null = null;
 
 if (enabled) {
   const app = initializeApp(firebaseConfig);
   auth = getAuth(app);
-  db = getFirestore(app);
+  // Cache offline: consultas repetidas no mesmo dispositivo não consomem cota do Firestore
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+  });
   storage = getStorage(app);
 }
 
@@ -263,6 +271,28 @@ export const getJobs = async (max = 50) => {
   const q = query(collection(db, 'jobs'), orderBy('createdAt', 'desc'), limit(max));
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+};
+
+const PAGE_SIZE = 12;
+
+/**
+ * Leitura paginada por cursor (startAfter).
+ * Retorna a página de vagas, o último documento (cursor para a próxima página)
+ * e se há mais vagas disponíveis.
+ */
+export const getJobsPage = async (cursor?: any) => {
+  if (!enabled || !db) return { jobs: [], lastDoc: null, hasMore: false };
+  const constraints = cursor
+    ? [orderBy('createdAt', 'desc'), startAfter(cursor), limit(PAGE_SIZE)]
+    : [orderBy('createdAt', 'desc'), limit(PAGE_SIZE)];
+  const q = query(collection(db, 'jobs'), ...constraints);
+  const snap = await getDocs(q);
+  const lastDoc = snap.docs.length > 0 ? snap.docs[snap.docs.length - 1] : null;
+  return {
+    jobs: snap.docs.map(d => ({ id: d.id, ...d.data() })),
+    lastDoc,
+    hasMore: snap.docs.length === PAGE_SIZE,
+  };
 };
 
 // Feedback helpers

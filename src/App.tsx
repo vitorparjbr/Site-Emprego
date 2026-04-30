@@ -33,7 +33,27 @@ export const AppContext = React.createContext<{
   setSearchModalOpen: (open: boolean) => void;
   homeResetKey: number;
   resetHome: () => void;
+  loadMoreJobs: () => void;
+  hasMoreJobs: boolean;
+  loadingMoreJobs: boolean;
 } | null>(null);
+
+// Helper para normalizar jobs vindos do Firestore (converte Timestamp -> ISO string)
+const normalizeJobs = (fbJobs: any[]): Job[] => fbJobs.map(j => {
+  let postedDate = new Date().toISOString();
+  if (j.createdAt) {
+    if (typeof j.createdAt === 'string') postedDate = j.createdAt;
+    else if (typeof j.createdAt === 'object' && j.createdAt.toDate) postedDate = j.createdAt.toDate().toISOString();
+    else if (j.createdAt instanceof Date) postedDate = j.createdAt.toISOString();
+  }
+  return {
+    ...j,
+    requirements: j.requirements || {},
+    postedDate,
+    applications: j.applications || [],
+    resumePreference: j.resumePreference || 'file',
+  };
+});
 
 // Componente principal da aplicação
 const App: React.FC = () => {
@@ -64,6 +84,9 @@ const App: React.FC = () => {
   }); // O Firebase substituirá isso pelo Auth
   
   const [authInitialized, setAuthInitialized] = useState(!fb.isEnabled());
+  const [lastDoc, setLastDoc] = useState<any>(null);
+  const [hasMoreJobs, setHasMoreJobs] = useState(false);
+  const [loadingMoreJobs, setLoadingMoreJobs] = useState(false);
 
   // Conecta ao observador de contas do Firebase
   useEffect(() => {
@@ -95,33 +118,15 @@ const App: React.FC = () => {
     setLoggedInEmployer(prev => prev ? { ...prev, companyName: name } : null);
   }, []);
 
-  // Se o Firebase estiver habilitado, carrega vagas do Firestore (leitura única, até 50 vagas)
+  // Se o Firebase estiver habilitado, carrega a primeira página de vagas (12 documentos)
   useEffect(() => {
     if (!fb.isEnabled()) return;
-    fb.getJobs().then((fbJobs) => {
-      const normalized = fbJobs.map(j => {
-        let postedDate = new Date().toISOString();
-        if (j.createdAt) {
-          if (typeof j.createdAt === 'string') {
-            postedDate = j.createdAt;
-          } else if (typeof j.createdAt === 'object' && j.createdAt.toDate) {
-            postedDate = j.createdAt.toDate().toISOString();
-          } else if (j.createdAt instanceof Date) {
-            postedDate = j.createdAt.toISOString();
-          }
-        }
-        return {
-          ...j,
-          requirements: j.requirements || {},
-          postedDate,
-          applications: j.applications || [],
-          resumePreference: j.resumePreference || 'file'
-        };
-      });
-      setJobs(normalized as Job[]);
-      try {
-        localStorage.setItem('jobs', JSON.stringify(normalized));
-      } catch (e) {}
+    fb.getJobsPage().then(({ jobs: fbJobs, lastDoc: last, hasMore }) => {
+      const normalized = normalizeJobs(fbJobs);
+      setJobs(normalized);
+      setLastDoc(last);
+      setHasMoreJobs(hasMore);
+      try { localStorage.setItem('jobs', JSON.stringify(normalized)); } catch (e) {}
     }).catch(() => {});
   }, []);
 
@@ -207,6 +212,21 @@ const App: React.FC = () => {
     ));
   }, []);
 
+  // Carrega a próxima página de vagas do Firestore (ação explícita do usuário)
+  const loadMoreJobs = useCallback(() => {
+    if (!fb.isEnabled() || loadingMoreJobs || !hasMoreJobs) return;
+    setLoadingMoreJobs(true);
+    fb.getJobsPage(lastDoc)
+      .then(({ jobs: newJobs, lastDoc: newLast, hasMore }) => {
+        const normalized = normalizeJobs(newJobs);
+        setJobs(prev => [...prev, ...normalized]);
+        setLastDoc(newLast);
+        setHasMoreJobs(hasMore);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingMoreJobs(false));
+  }, [lastDoc, loadingMoreJobs, hasMoreJobs]);
+
   // Função para adicionar uma nova candidatura a uma vaga
   const addApplication = useCallback((jobId: string, applicationData: Omit<Application, 'id' | 'date'>) => {
     if (fb.isEnabled()) {
@@ -291,7 +311,10 @@ const App: React.FC = () => {
     setSearchModalOpen,
     homeResetKey,
     resetHome,
-  }), [jobs, loggedInEmployer, updateEmployerName, addJob, updateJob, deleteJob, renewJob, addApplication, searchModalOpen, homeResetKey, resetHome]);
+    loadMoreJobs,
+    hasMoreJobs,
+    loadingMoreJobs,
+  }), [jobs, loggedInEmployer, updateEmployerName, addJob, updateJob, deleteJob, renewJob, addApplication, searchModalOpen, homeResetKey, resetHome, loadMoreJobs, hasMoreJobs, loadingMoreJobs]);
 
   // O Provider do AppContext envolve a aplicação, disponibilizando o 'contextValue'
   // para todos os componentes filhos que precisarem dele.
