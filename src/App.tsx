@@ -95,21 +95,19 @@ const App: React.FC = () => {
     setLoggedInEmployer(prev => prev ? { ...prev, companyName: name } : null);
   }, []);
 
-  // Se o Firebase estiver habilitado, sincroniza com Firestore (jobs)
+  // Se o Firebase estiver habilitado, carrega vagas do Firestore (leitura única, até 50 vagas)
   useEffect(() => {
     if (!fb.isEnabled()) return;
-    const unsubJobs = fb.listenJobs((fbJobs) => {
-      // Normaliza campos: createdAt -> postedDate (ISO string)
+    fb.getJobs().then((fbJobs) => {
       const normalized = fbJobs.map(j => {
-        // Converte createdAt (Timestamp do Firebase) para ISO string
         let postedDate = new Date().toISOString();
         if (j.createdAt) {
           if (typeof j.createdAt === 'string') {
-            postedDate = j.createdAt; // já é string
+            postedDate = j.createdAt;
           } else if (typeof j.createdAt === 'object' && j.createdAt.toDate) {
-            postedDate = j.createdAt.toDate().toISOString(); // Firestore Timestamp
+            postedDate = j.createdAt.toDate().toISOString();
           } else if (j.createdAt instanceof Date) {
-            postedDate = j.createdAt.toISOString(); // Date object
+            postedDate = j.createdAt.toISOString();
           }
         }
         return {
@@ -121,17 +119,10 @@ const App: React.FC = () => {
         };
       });
       setJobs(normalized as Job[]);
-      // Também sincroniza com localStorage como fallback
       try {
         localStorage.setItem('jobs', JSON.stringify(normalized));
-      } catch (e) {
-        // ignorar erro de storage
-      }
-    });
-
-    return () => {
-      try { unsubJobs(); } catch (e) {}
-    };
+      } catch (e) {}
+    }).catch(() => {});
   }, []);
 
   // Função para adicionar uma nova vaga de emprego
@@ -141,8 +132,19 @@ const App: React.FC = () => {
       return;
     }
     if (fb.isEnabled()) {
-      // Envia para Firestore; o listener sincronizará o estado local
-      fb.addJob(jobData, loggedInEmployer.id).catch((err) => {
+      const tempId = `pending-${Date.now()}`;
+      const optimisticJob: Job = {
+        ...jobData,
+        id: tempId,
+        postedDate: new Date().toISOString(),
+        employerId: loggedInEmployer.id,
+        applications: [],
+      };
+      setJobs(prev => [optimisticJob, ...prev]);
+      fb.addJob(jobData, loggedInEmployer.id).then(savedJob => {
+        setJobs(prev => prev.map(j => j.id === tempId ? { ...optimisticJob, id: savedJob.id } : j));
+      }).catch((err) => {
+        setJobs(prev => prev.filter(j => j.id !== tempId));
         try { toast.error('Falha ao publicar a vaga: ' + (err?.message || String(err))); } catch (e) {}
       });
       return;
@@ -161,6 +163,9 @@ const App: React.FC = () => {
   const updateJob = useCallback((jobId: string, jobData: Omit<Job, 'id' | 'postedDate' | 'employerId' | 'applications'>) => {
     if (fb.isEnabled()) {
       fb.updateJob(jobId, jobData).catch(() => {});
+      setJobs(prevJobs => prevJobs.map(job =>
+        job.id === jobId ? { ...job, ...jobData } : job
+      ));
       return;
     }
     setJobs(prevJobs => prevJobs.map(job => {
@@ -182,6 +187,7 @@ const App: React.FC = () => {
   const deleteJob = useCallback((jobId: string) => {
     if (fb.isEnabled()) {
       fb.deleteJob(jobId).catch(() => {});
+      setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
       return;
     }
     setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
@@ -191,6 +197,9 @@ const App: React.FC = () => {
   const renewJob = useCallback((jobId: string) => {
     if (fb.isEnabled()) {
       fb.renewJob(jobId).catch(() => {});
+      setJobs(prevJobs => prevJobs.map(job =>
+        job.id === jobId ? { ...job, postedDate: new Date().toISOString() } : job
+      ));
       return;
     }
     setJobs(prevJobs => prevJobs.map(job =>

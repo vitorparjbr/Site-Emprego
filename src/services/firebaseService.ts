@@ -23,7 +23,8 @@ import {
   serverTimestamp,
   getDocs,
   getDoc,
-  deleteField
+  deleteField,
+  limit,
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -250,6 +251,18 @@ export const listenJobs = (cb: (jobs: any[]) => void) => {
     cb(jobs as any[]);
   });
   return unsub;
+};
+
+/**
+ * Leitura única das vagas, limitada a `max` documentos.
+ * Use no lugar de listenJobs para visitantes — evita cobranças de leitura
+ * a cada atualização no Firestore.
+ */
+export const getJobs = async (max = 50) => {
+  if (!enabled || !db) return [];
+  const q = query(collection(db, 'jobs'), orderBy('createdAt', 'desc'), limit(max));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 };
 
 // Feedback helpers

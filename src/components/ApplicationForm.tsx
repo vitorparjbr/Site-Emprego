@@ -2,6 +2,7 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../App';
 import { Job } from '../types';
+import * as fb from '../services/firebaseService';
 
 interface ApplicationFormProps {
   job: Job;
@@ -9,10 +10,9 @@ interface ApplicationFormProps {
   onSuccess: () => void;
 }
 
-// Limite seguro: 700 KB antes da codificação Base64.
-// Após a conversão (~+33%), o documento Firestore ficará abaixo de 1 MB.
-const MAX_FILE_BYTES = 700 * 1024; // 700 KB
-const MAX_FILE_LABEL = '700 KB';
+// Limite para upload no Firebase Storage (regras permitem até 5 MB).
+const MAX_FILE_BYTES = 4.5 * 1024 * 1024; // 4,5 MB
+const MAX_FILE_LABEL = '4,5 MB';
 
 const ApplicationForm: React.FC<ApplicationFormProps> = ({ job, onCancel, onSuccess }) => {
   const [fullName, setFullName]     = useState('');
@@ -63,21 +63,32 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ job, onCancel, onSucc
 
     try {
       if (resumeFile) {
-        // Lê o arquivo e converte para Base64 (Data URL)
-        const base64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(resumeFile);
-          reader.onload  = () => resolve(reader.result as string);
-          reader.onerror = () => reject(new Error('Não foi possível ler o arquivo.'));
-        });
-
-        context.addApplication(job.id, {
-          fullName,
-          email,
-          phone,
-          resumeFile: { name: resumeFile.name, type: resumeFile.type, content: base64 },
-          resumeText: resumeText || undefined,
-        });
+        if (fb.isEnabled()) {
+          // Upload para Firebase Storage — o currículo não ocupa espaço no Firestore
+          const url = await fb.uploadResume(resumeFile, job.id);
+          context.addApplication(job.id, {
+            fullName,
+            email,
+            phone,
+            resumeFile: { name: resumeFile.name, type: resumeFile.type, url },
+            resumeText: resumeText || undefined,
+          });
+        } else {
+          // Modo local sem Firebase: fallback para Base64
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(resumeFile);
+            reader.onload  = () => resolve(reader.result as string);
+            reader.onerror = () => reject(new Error('Não foi possível ler o arquivo.'));
+          });
+          context.addApplication(job.id, {
+            fullName,
+            email,
+            phone,
+            resumeFile: { name: resumeFile.name, type: resumeFile.type, content: base64 },
+            resumeText: resumeText || undefined,
+          });
+        }
       } else {
         context.addApplication(job.id, {
           fullName,

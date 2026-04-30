@@ -101,9 +101,15 @@ const EmployerPage: React.FC = () => {
                              {app.resumeFile && (
                                 <p>
                                   <strong>Currículo (Arquivo):</strong>{' '}
-                                  <a href={app.resumeFile.content} download={app.resumeFile.name} className="text-blue-500 hover:underline">
-                                    {app.resumeFile.name}
-                                  </a>
+                                  {app.resumeFile.url ? (
+                                    <a href={app.resumeFile.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                      {app.resumeFile.name}
+                                    </a>
+                                  ) : (
+                                    <a href={app.resumeFile.content} download={app.resumeFile.name} className="text-blue-500 hover:underline">
+                                      {app.resumeFile.name}
+                                    </a>
+                                  )}
                                 </p>
                               )}
                              {app.resumeText && <div className="mt-2"><strong>Currículo (Texto):</strong><pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded whitespace-pre-wrap font-sans">{app.resumeText}</pre></div>}

@@ -11,7 +11,8 @@ export interface Application {
   resumeFile?: {
     name: string;
     type: string;
-    content: string; // base64
+    url?: string;     // Firebase Storage URL
+    content?: string; // base64 (legado / modo local sem Firebase)
   };
   resumeText?: string;
   date: string;
